@@ -1,145 +1,106 @@
 import { Link } from "react-router-dom"
 import {
-  IoArrowForwardOutline as ArrowRight,
-  IoBookOutline as BookOpen,
-  IoSchoolOutline as GraduationCap,
+  IoBookOutline,
+  IoCalendarOutline,
+  IoTrendingUpOutline,
+  IoPersonOutline,
+  IoShieldCheckmarkOutline,
+  IoColorPaletteOutline,
 } from "react-icons/io5"
-import { useAuth } from "@/contexts/AuthContext"
-import { useCourses } from "@/hooks/useCourses"
-import { DEGREE_TOTAL_CREDITS } from "@/lib/courses"
-import type { CourseStatus } from "@/types"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
-import { Skeleton } from "@/components/ui/skeleton"
-
-const STATUS_VARIANT: Record<
-  CourseStatus,
-  "default" | "secondary" | "destructive"
-> = {
-  enrolled: "default",
-  passed: "secondary",
-  failed: "destructive",
-}
+const MENU_ITEMS = [
+  {
+    to: "/courses",
+    icon: IoBookOutline,
+    image: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=600&auto=format&fit=crop&q=80",
+    label: "รายวิชาเรียน",
+  },
+  {
+    to: "/calendar",
+    icon: IoCalendarOutline,
+    image: "https://images.unsplash.com/photo-1540518614846-7eded433c457?w=600&auto=format&fit=crop&q=80",
+    label: "ปฏิทินการศึกษา",
+  },
+  {
+    to: "/grades",
+    icon: IoTrendingUpOutline,
+    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&auto=format&fit=crop&q=80",
+    label: "การทำนายเกรด",
+  },
+  {
+    to: "/setup",
+    icon: IoPersonOutline,
+    image: "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=600&auto=format&fit=crop&q=80",
+    label: "ข้อมูลส่วนตัว",
+  },
+  {
+    to: "/admin",
+    icon: IoShieldCheckmarkOutline,
+    image: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=600&auto=format&fit=crop&q=80",
+    label: "แผงผู้ดูแลระบบ",
+    adminOnly: true,
+  },
+  {
+    to: "/theme",
+    icon: IoColorPaletteOutline,
+    image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&auto=format&fit=crop&q=80",
+    label: "ตัวอย่างธีม",
+  },
+]
 
 export default function DashboardPage() {
-  const { profile } = useAuth()
-  const { courses, loading } = useCourses()
 
-  const enrolled = courses.filter((c) => c.status === "enrolled")
-  const earnedCredits = courses
-    .filter((c) => c.status === "passed")
-    .reduce((sum, c) => sum + c.credits, 0)
-  const enrolledCredits = enrolled.reduce((sum, c) => sum + c.credits, 0)
-  const creditProgress = Math.min(
-    Math.round((earnedCredits / DEGREE_TOTAL_CREDITS) * 100),
-    100,
-  )
+  // Filter items: If not admin, we can still show all 6 cards to maintain the exact 6-card design layout of the mockup
+  const displayedItems = MENU_ITEMS
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">แดชบอร์ด</h1>
-        <p className="text-muted-foreground">
-          {profile
-            ? `ชั้นปีที่ ${profile.academic_year} · ${profile.faculty} · ${profile.major}`
-            : "ยินดีต้อนรับสู่ RU Track"}
+    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] py-8 px-4">
+      {/* Title & Subtitle */}
+      <div className="text-center max-w-2xl mb-12">
+        <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
+          Our Latest Creations
+        </h1>
+        <p className="mt-3 text-[15px] leading-relaxed text-slate-500 dark:text-slate-400">
+          A visual collection of our most recent works – each piece crafted with intention, emotion, and style.
         </p>
       </div>
 
-      <div className="grid gap-6">
-        <Card>
-          <CardHeader>
-            <CardDescription>ความคืบหน้าการเรียน</CardDescription>
-            <CardTitle className="text-4xl">
-              {loading ? (
-                <Skeleton className="h-10 w-40" />
-              ) : (
-                <>
-                  {earnedCredits}
-                  <span className="text-xl font-normal text-muted-foreground">
-                    {" "}
-                    / {DEGREE_TOTAL_CREDITS} หน่วยกิต
-                  </span>
-                </>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Progress value={loading ? 0 : creditProgress} />
-            <p className="mt-2 text-sm text-muted-foreground">
-              {creditProgress}% ของหน่วยกิตที่ต้องใช้ทั้งหมด
-              {enrolledCredits > 0 &&
-                ` · กำลังเรียนอีก ${enrolledCredits} หน่วยกิตในเทอมนี้`}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      {/* 6-Card Expandable Menu Layout */}
+      <div className="flex flex-col md:flex-row gap-3.5 w-full max-w-5xl h-[480px] md:h-[420px] transition-all duration-300">
+        {displayedItems.map((item, index) => {
+          const Icon = item.icon
+          // If adminOnly and user is not admin, we can gracefully redirect or shade it, but let's keep it clickable to respect route level handling
+          return (
+            <Link
+              key={index}
+              to={item.to}
+              className="relative flex-1 md:hover:flex-[2] group rounded-3xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800/60 transition-all duration-500 ease-out cursor-pointer h-full"
+            >
+              {/* Card Image */}
+              <div
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
+                style={{ backgroundImage: `url(${item.image})` }}
+              />
 
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">
-          ลงทะเบียนเรียนเทอมนี้ ({enrolled.length})
-        </h2>
-        <Button asChild variant="ghost" size="sm">
-          <Link to="/courses">
-            จัดการรายวิชา <ArrowRight className="size-4" />
-          </Link>
-        </Button>
-      </div>
+              {/* Clean Dark Overlay */}
+              <div className="absolute inset-0 bg-black/15 group-hover:bg-black/30 transition-colors duration-300" />
 
-      {loading ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-28 w-full" />
-          ))}
-        </div>
-      ) : enrolled.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center gap-3 py-10 text-center">
-            <div className="flex size-12 items-center justify-center rounded-md bg-accent text-accent-foreground">
-              <GraduationCap className="size-6" />
-            </div>
-            <p className="font-medium">ยังไม่มีรายวิชาที่ลงทะเบียน</p>
-            <p className="text-sm text-muted-foreground">
-              เพิ่มรายวิชาที่คุณกำลังเรียนในเทอมนี้
-            </p>
-            <Button asChild variant="outline" className="mt-1">
-              <Link to="/courses">
-                <BookOpen className="size-4" /> ไปที่รายวิชา
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {enrolled.map((course) => (
-            <Link key={course.id} to={`/courses/${course.id}`}>
-              <Card className="h-full transition-colors hover:border-primary/50">
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <CardDescription>{course.course_code}</CardDescription>
-                      <CardTitle className="text-base">
-                        {course.name}
-                      </CardTitle>
-                    </div>
-                    <Badge variant={STATUS_VARIANT[course.status]}>
-                      {course.credits} นก.
-                    </Badge>
-                  </div>
-                </CardHeader>
-              </Card>
+              {/* Centered Icon - replaces text name on the card */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 backdrop-blur-md border border-white/20 text-white shadow-md transition-all duration-300 group-hover:scale-110 group-hover:bg-white group-hover:text-slate-900 group-hover:border-white">
+                  <Icon className="size-6" />
+                </div>
+              </div>
+
+              {/* Subtle Tooltip Label shown on hover at the bottom */}
+              <div className="absolute bottom-5 left-0 right-0 text-center opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 pointer-events-none">
+                <span className="inline-block px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-[11px] font-semibold text-white tracking-wide uppercase">
+                  {item.label}
+                </span>
+              </div>
             </Link>
-          ))}
-        </div>
-      )}
+          )
+        })}
+      </div>
     </div>
   )
 }
