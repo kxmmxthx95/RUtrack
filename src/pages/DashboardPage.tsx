@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { ArrowRight, BookOpen, Car, GraduationCap } from "lucide-react"
+import { ArrowRight, BookOpen, GraduationCap } from "lucide-react"
 import { useAuth } from "@/contexts/AuthContext"
 import { useCourses } from "@/hooks/useCourses"
 import { DEGREE_TOTAL_CREDITS } from "@/lib/courses"
@@ -38,10 +38,6 @@ export default function DashboardPage() {
     Math.round((earnedCredits / DEGREE_TOTAL_CREDITS) * 100),
     100,
   )
-  const commuteKm = Number(profile?.additional_info?.commute_distance_km ?? 0)
-  const commuteMin = Number(
-    profile?.additional_info?.commute_minutes_per_day ?? 0,
-  )
 
   return (
     <div className="space-y-6">
@@ -54,8 +50,8 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
-        <Card className="md:col-span-2">
+      <div className="grid gap-6">
+        <Card>
           <CardHeader>
             <CardDescription>ความคืบหน้าการเรียน</CardDescription>
             <CardTitle className="text-4xl">
@@ -78,19 +74,6 @@ export default function DashboardPage() {
               {creditProgress}% ของหน่วยกิตที่ต้องใช้ทั้งหมด
               {enrolledCredits > 0 &&
                 ` · กำลังเรียนอีก ${enrolledCredits} หน่วยกิตในเทอมนี้`}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardDescription>ค่าใช้จ่ายคงที่รายวัน</CardDescription>
-            <CardTitle className="flex items-center gap-2 text-2xl">
-              <Car className="size-5 text-primary" /> {commuteKm} กม./วัน
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              เดินทาง ~{commuteMin} นาทีต่อวัน ปฏิทินจะบล็อกเวลานี้ให้โดยอัตโนมัติ
             </p>
           </CardContent>
         </Card>
