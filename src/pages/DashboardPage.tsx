@@ -71,11 +71,11 @@ export default function DashboardPage() {
     const absDiff = Math.abs(diff)
     
     // Arch height adjustment
-    const translateY = absDiff * 14
+    const translateY = absDiff * 18
     // Rotation for fan shape
-    const rotateZ = diff * 7
+    const rotateZ = diff * 8
     // Horizontal overlapping offset
-    const translateX = diff * 50
+    const translateX = diff * 65
     // Card scale factor
     const scale = 1 - absDiff * 0.08
     // Transparency factor
@@ -160,9 +160,9 @@ export default function DashboardPage() {
       </div>
 
       {/* MOBILE VIEW: Beautiful cover-flow fan/arch style with white background */}
-      <div className="md:hidden flex flex-col items-center justify-center w-full bg-white dark:bg-slate-900 py-10 px-4 overflow-hidden">
+      <div className="md:hidden flex flex-col items-center justify-center -mx-4 w-[calc(100%+2rem)] bg-white dark:bg-slate-900 py-10 px-0 overflow-hidden">
         {/* Card Stage */}
-        <div className="relative w-full h-[280px] flex items-center justify-center">
+        <div className="relative w-full h-[320px] flex items-center justify-center">
           {displayedItems.map((item, index) => {
             const Icon = item.icon
             const isActive = index === activeIndex
@@ -183,7 +183,7 @@ export default function DashboardPage() {
                     setActiveIndex(index)
                   }
                 }}
-                className="absolute w-[140px] h-[220px] rounded-2xl overflow-hidden shadow-md border border-white/20 cursor-pointer origin-bottom"
+                className="absolute w-[180px] h-[280px] rounded-2xl overflow-hidden shadow-md border border-white/20 cursor-pointer origin-bottom"
               >
                 {/* Image */}
                 <div
@@ -196,15 +196,15 @@ export default function DashboardPage() {
 
                 {/* Center Icon */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-300 ${isActive ? 'bg-white text-slate-900 scale-100' : 'bg-white/20 backdrop-blur-sm text-white scale-90'}`}>
-                    <Icon className="size-5" />
+                  <div className={`flex h-14 w-14 items-center justify-center rounded-2xl transition-all duration-300 ${isActive ? 'bg-white text-slate-900 scale-100' : 'bg-white/20 backdrop-blur-sm text-white scale-90'}`}>
+                    <Icon className="size-7" />
                   </div>
                 </div>
 
                 {/* Label (only shown for active card) */}
                 {isActive && (
-                  <div className="absolute bottom-3 left-0 right-0 text-center animate-fade-in">
-                    <span className="inline-block px-2.5 py-1 rounded-full bg-white/25 backdrop-blur-md border border-white/20 text-[9px] font-semibold text-white tracking-wide uppercase">
+                  <div className="absolute bottom-5 left-0 right-0 text-center animate-fade-in">
+                    <span className="inline-block px-3 py-1.5 rounded-full bg-white/25 backdrop-blur-md border border-white/20 text-[11px] font-semibold text-white tracking-wide uppercase">
                       {item.label}
                     </span>
                   </div>
