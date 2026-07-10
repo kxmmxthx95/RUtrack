@@ -103,7 +103,7 @@ export default function ProfileSetupPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#FAFBFC] px-4 py-12 dark:bg-[#0f172a]">
-      <div className="w-full max-w-2xl rounded-[24px] border border-slate-100 bg-white p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-slate-800/80 dark:bg-[#1e293b] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] sm:p-10">
+      <div className="w-full max-w-2xl rounded-[24px] border border-slate-100 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-slate-800/80 dark:bg-[#1e293b] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] sm:p-10">
         
         {/* Shield Icon Container */}
         <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-slate-800 dark:bg-[#1e293b]">
@@ -269,91 +269,6 @@ export default function ProfileSetupPage() {
                 )}
               />
 
-              {/* Custom Separator */}
-              <div className="border-t border-slate-100 dark:border-slate-800 my-2"></div>
-
-              {/* Expense/Commute Section Header */}
-              <div>
-                <h3 className="text-[17px] font-bold text-slate-900 dark:text-white">ค่าใช้จ่ายคงที่รายวัน</h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                  ใช้โดยปฏิทินจัดสรรเวลาเพื่อจองเวลาเดินทางและเวลาทำงานให้โดยอัตโนมัติ
-                </p>
-              </div>
-
-              {/* Commute and Work Inputs */}
-              <div className="grid gap-6 sm:grid-cols-3">
-                {/* Commute Distance */}
-                <FormField
-                  control={form.control}
-                  name="commute_distance_km"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">ระยะทางเดินทาง (กม./วัน)</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          min={0}
-                          value={field.value}
-                          onChange={(e) =>
-                            field.onChange(e.target.valueAsNumber || 0)
-                          }
-                          className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:focus:border-blue-500 dark:focus:bg-slate-800"
-                        />
-                      </FormControl>
-                      <FormDescription className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">ไป-กลับ</FormDescription>
-                      <FormMessage className="text-xs text-red-500 mt-0.5" />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Commute Minutes */}
-                <FormField
-                  control={form.control}
-                  name="commute_minutes_per_day"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">เวลาเดินทาง (นาที/วัน)</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          min={0}
-                          value={field.value}
-                          onChange={(e) =>
-                            field.onChange(e.target.valueAsNumber || 0)
-                          }
-                          className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:focus:border-blue-500 dark:focus:bg-slate-800"
-                        />
-                      </FormControl>
-                      <FormDescription className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">เวลาเดินทางรวม</FormDescription>
-                      <FormMessage className="text-xs text-red-500 mt-0.5" />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Work Hours */}
-                <FormField
-                  control={form.control}
-                  name="work_hours_per_week"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">ทำงาน (ชม./สัปดาห์)</FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          min={0}
-                          value={field.value}
-                          onChange={(e) =>
-                            field.onChange(e.target.valueAsNumber || 0)
-                          }
-                          className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:focus:border-blue-500 dark:focus:bg-slate-800"
-                        />
-                      </FormControl>
-                      <FormDescription className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">ใส่ 0 หากไม่มี</FormDescription>
-                      <FormMessage className="text-xs text-red-500 mt-0.5" />
-                    </FormItem>
-                  )}
-                />
-              </div>
 
               {/* Submit Button */}
               <button
