@@ -137,6 +137,73 @@ export default function ProfileSetupPage() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-6">
               
+              {/* 3. ข้อมูลส่วนตัว (คำนำหน้า ชื่อ นามสกุล) */}
+              <div className="grid gap-6 grid-cols-1 sm:grid-cols-3">
+                {/* Title field */}
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">คำนำหน้า</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:focus:border-blue-500 dark:focus:bg-slate-800">
+                            <SelectValue placeholder="เลือกคำนำหน้า" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="rounded-xl border border-slate-100 shadow-md dark:border-slate-800 dark:bg-[#1e293b]">
+                          {TITLE_OPTIONS.map((t) => (
+                            <SelectItem key={t} value={t} className="rounded-lg cursor-pointer">
+                              {t}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-xs text-red-500 mt-0.5" />
+                    </FormItem>
+                  )}
+                />
+
+                {/* First Name field */}
+                <FormField
+                  control={form.control}
+                  name="first_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">ชื่อ</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="สมชาย"
+                          {...field}
+                          className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs text-red-500 mt-0.5" />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Last Name field */}
+                <FormField
+                  control={form.control}
+                  name="last_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">นามสกุล</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="ใจดี"
+                          {...field}
+                          className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs text-red-500 mt-0.5" />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               {/* 1. วิทยาเขต (Campus Type) */}
               <FormField
                 control={form.control}
@@ -246,73 +313,6 @@ export default function ProfileSetupPage() {
                           placeholder="เช่น 0812345678"
                           inputMode="tel"
                           maxLength={10}
-                          {...field}
-                          className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800"
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs text-red-500 mt-0.5" />
-                    </FormItem>
-                  )}
-                />
-              </div>
-
-              {/* 3. ข้อมูลส่วนตัว (คำนำหน้า ชื่อ นามสกุล) */}
-              <div className="grid gap-6 grid-cols-1 sm:grid-cols-3">
-                {/* Title field */}
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">คำนำหน้า</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:focus:border-blue-500 dark:focus:bg-slate-800">
-                            <SelectValue placeholder="เลือกคำนำหน้า" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="rounded-xl border border-slate-100 shadow-md dark:border-slate-800 dark:bg-[#1e293b]">
-                          {TITLE_OPTIONS.map((t) => (
-                            <SelectItem key={t} value={t} className="rounded-lg cursor-pointer">
-                              {t}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage className="text-xs text-red-500 mt-0.5" />
-                    </FormItem>
-                  )}
-                />
-
-                {/* First Name field */}
-                <FormField
-                  control={form.control}
-                  name="first_name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">ชื่อ</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="สมชาย"
-                          {...field}
-                          className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800"
-                        />
-                      </FormControl>
-                      <FormMessage className="text-xs text-red-500 mt-0.5" />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Last Name field */}
-                <FormField
-                  control={form.control}
-                  name="last_name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">นามสกุล</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="ใจดี"
                           {...field}
                           className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800"
                         />
