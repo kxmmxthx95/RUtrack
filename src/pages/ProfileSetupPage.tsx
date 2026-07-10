@@ -105,31 +105,6 @@ export default function ProfileSetupPage() {
     <div className="flex min-h-screen items-center justify-center bg-[#FAFBFC] px-4 py-12 dark:bg-[#0f172a]">
       <div className="w-full max-w-2xl rounded-[24px] border border-slate-100 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-slate-800/80 dark:bg-[#1e293b] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] sm:p-10">
         
-        {/* Shield Icon Container */}
-        <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-slate-100 bg-white shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-slate-800 dark:bg-[#1e293b]">
-          <svg
-            width="32"
-            height="32"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M12 21.35l-7.35-7.35C3.5 12.85 3 11.5 3 10.15V5.5C3 4.12 4.12 3 5.5 3h13C19.88 3 21 4.12 21 5.5v4.65c0 1.35-.5 2.7-1.65 3.85l-7.35 7.35z"
-              fill="url(#blueGradient)"
-            />
-            <path
-              d="M12 7.5c0 2.2 1.3 3.5 3.5 3.5c-2.2 0-3.5 1.3-3.5 3.5c0-2.2-1.3-3.5-3.5-3.5c2.2 0 3.5-1.3 3.5-3.5z"
-              fill="white"
-            />
-            <defs>
-              <linearGradient id="blueGradient" x1="12" y1="3" x2="12" y2="21.35" gradientUnits="userSpaceOnUse">
-                <stop offset="0%" stopColor="#4A86F7" />
-                <stop offset="100%" stopColor="#2B61E3" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
 
         {/* Header */}
         <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
