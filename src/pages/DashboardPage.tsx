@@ -78,13 +78,11 @@ export default function DashboardPage() {
     const translateX = diff * 65
     // Card scale factor
     const scale = 1 - absDiff * 0.08
-    // Transparency factor
-    const opacity = 1 - absDiff * 0.18
     const zIndex = 10 - absDiff
 
     return {
       transform: `translateX(${translateX}px) translateY(${translateY}px) rotate(${rotateZ}deg) scale(${scale})`,
-      opacity: opacity > 0 ? opacity : 0,
+      opacity: 1,
       zIndex,
       transition: "all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)",
     }
