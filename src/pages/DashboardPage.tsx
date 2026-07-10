@@ -91,7 +91,7 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] py-8 px-4">
+    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] py-8 px-0 sm:px-4">
       {/* Title & Subtitle */}
       <div className="text-center max-w-2xl mb-12">
         <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
