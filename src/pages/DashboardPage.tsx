@@ -75,7 +75,7 @@ export default function DashboardPage() {
       </div>
 
       {/* 6-Card Expandable Menu Layout */}
-      <div className="flex flex-col md:flex-row gap-3.5 w-full max-w-5xl h-[480px] md:h-[420px] transition-all duration-300">
+      <div className="flex flex-col md:flex-row gap-1.5 w-full max-w-5xl h-[480px] md:h-[420px] transition-all duration-300">
         {displayedItems.map((item, index) => {
           const Icon = item.icon
           const cardContent = (
