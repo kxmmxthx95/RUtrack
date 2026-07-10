@@ -25,7 +25,6 @@ import {
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -176,7 +175,7 @@ export default function ProfileSetupPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#FAFBFC] px-4 py-12 dark:bg-[#0f172a]">
       <div className="w-full max-w-2xl rounded-[24px] border border-slate-100 bg-white p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:border-slate-800/80 dark:bg-[#1e293b] dark:shadow-[0_8px_30px_rgb(0,0,0,0.2)] sm:p-10">
-        
+
 
         {/* Header */}
         <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
@@ -186,7 +185,7 @@ export default function ProfileSetupPage() {
         <div className="mt-8">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-6">
-              
+
               {/* 3. ข้อมูลส่วนตัว (คำนำหน้า ชื่อ นามสกุล) */}
               <div className="grid gap-6 grid-cols-1 sm:grid-cols-3">
                 {/* Title field */}
@@ -254,6 +253,51 @@ export default function ProfileSetupPage() {
                 />
               </div>
 
+              {/* ข้อมูลการติดต่อและรหัสนักศึกษา */}
+              <div className="grid gap-6 sm:grid-cols-2">
+                {/* Student ID field */}
+                <FormField
+                  control={form.control}
+                  name="student_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">รหัสนักศึกษา</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="6612345678"
+                          inputMode="numeric"
+                          maxLength={10}
+                          {...field}
+                          className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs text-red-500 mt-0.5" />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Phone Number field */}
+                <FormField
+                  control={form.control}
+                  name="phone_number"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">เบอร์โทรศัพท์</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="เช่น 0812345678"
+                          inputMode="tel"
+                          maxLength={10}
+                          {...field}
+                          className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs text-red-500 mt-0.5" />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               {/* 1. วิทยาเขต (Campus Type) */}
               <FormField
                 control={form.control}
@@ -289,8 +333,8 @@ export default function ProfileSetupPage() {
                 )}
               />
 
-              {/* 2. ข้อมูลวิชาการและการติดต่อ */}
-              <div className="grid gap-6 sm:grid-cols-2">
+              {/* 2. ข้อมูลวิชาการ */}
+              <div className="grid gap-6 sm:grid-cols-3">
                 {/* Faculty field */}
                 <FormField
                   control={form.control}
@@ -378,49 +422,6 @@ export default function ProfileSetupPage() {
                           ))}
                         </SelectContent>
                       </Select>
-                      <FormMessage className="text-xs text-red-500 mt-0.5" />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Student ID field */}
-                <FormField
-                  control={form.control}
-                  name="student_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">รหัสนักศึกษา</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="6612345678"
-                          inputMode="numeric"
-                          maxLength={10}
-                          {...field}
-                          className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800"
-                        />
-                      </FormControl>
-                      <FormDescription className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">10 หลัก</FormDescription>
-                      <FormMessage className="text-xs text-red-500 mt-0.5" />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Phone Number field */}
-                <FormField
-                  control={form.control}
-                  name="phone_number"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">เบอร์โทรศัพท์</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="เช่น 0812345678"
-                          inputMode="tel"
-                          maxLength={10}
-                          {...field}
-                          className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800"
-                        />
-                      </FormControl>
                       <FormMessage className="text-xs text-red-500 mt-0.5" />
                     </FormItem>
                   )}
