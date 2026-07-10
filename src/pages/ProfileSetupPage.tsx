@@ -1,3 +1,4 @@
+import { useEffect, useMemo } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -5,6 +6,12 @@ import { useNavigate } from "react-router-dom"
 import { toast } from "sonner"
 import { useAuth } from "@/contexts/AuthContext"
 import { saveUserProfile } from "@/lib/profile"
+import {
+  getFaculties,
+  getPrograms,
+  getMajors,
+  type CampusCatalogKey,
+} from "@/lib/universityCatalog"
 import type { CampusType, UserProfile } from "@/types"
 import { Input } from "@/components/ui/input"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -40,6 +47,7 @@ const profileSchema = z.object({
   academic_year: z.number().int().min(1).max(8).optional().default(1),
   campus_type: z.enum(["main", "bangna", "regional", "online"]),
   faculty: z.string().min(1, "กรุณากรอกคณะ"),
+  program: z.string().min(1, "กรุณาเลือกหลักสูตร"),
   major: z.string().min(1, "กรุณากรอกสาขาวิชา"),
   title: z.string().min(1, "กรุณากรอกคำนำหน้า"),
   first_name: z.string().min(1, "กรุณากรอกชื่อ"),
@@ -81,6 +89,7 @@ export default function ProfileSetupPage() {
       academic_year: profile?.academic_year ?? 1,
       campus_type: profile?.campus_type ?? "main",
       faculty: profile?.faculty ?? "",
+      program: profile?.program ?? "",
       major: profile?.major ?? "",
       title: profile?.title ?? "",
       first_name: profile?.first_name ?? "",
@@ -95,6 +104,46 @@ export default function ProfileSetupPage() {
     },
   })
 
+  const campusType = form.watch("campus_type")
+  const catalogCampus: CampusCatalogKey =
+    campusType === "bangna" || campusType === "regional" ? campusType : "main"
+  const faculties = useMemo(
+    () => getFaculties(catalogCampus),
+    [catalogCampus],
+  )
+  const selectedFaculty = form.watch("faculty")
+  const selectedProgram = form.watch("program")
+  const selectedMajor = form.watch("major")
+  const programs = useMemo(
+    () => getPrograms(catalogCampus, selectedFaculty),
+    [catalogCampus, selectedFaculty],
+  )
+  const majors = useMemo(
+    () => getMajors(catalogCampus, selectedFaculty, selectedProgram),
+    [catalogCampus, selectedFaculty, selectedProgram],
+  )
+
+  useEffect(() => {
+    if (selectedFaculty && !faculties.some((faculty) => faculty.name === selectedFaculty)) {
+      form.setValue("faculty", "")
+      form.setValue("program", "")
+      form.setValue("major", "")
+    }
+  }, [faculties, form, selectedFaculty])
+
+  useEffect(() => {
+    if (selectedProgram && !programs.some((p) => p.name === selectedProgram)) {
+      form.setValue("program", "")
+      form.setValue("major", "")
+    }
+  }, [form, programs, selectedProgram])
+
+  useEffect(() => {
+    if (selectedMajor && !majors.some((major) => major.name === selectedMajor)) {
+      form.setValue("major", "")
+    }
+  }, [form, majors, selectedMajor])
+
   async function onSubmit(values: ProfileFormValues) {
     if (!user) return
     const data: UserProfile = {
@@ -102,6 +151,7 @@ export default function ProfileSetupPage() {
       academic_year: values.academic_year ?? 1,
       campus_type: values.campus_type,
       faculty: values.faculty,
+      program: values.program,
       major: values.major,
       title: values.title,
       first_name: values.first_name,
@@ -248,13 +298,52 @@ export default function ProfileSetupPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">คณะ</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="เช่น วิทยาศาสตร์"
-                          {...field}
-                          className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800"
-                        />
-                      </FormControl>
+                      <Select onValueChange={(val) => { field.onChange(val); form.setValue("program", ""); form.setValue("major", "") }} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:focus:border-blue-500 dark:focus:bg-slate-800">
+                            <SelectValue placeholder="เลือกคณะ" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="rounded-xl border border-slate-100 shadow-md dark:border-slate-800 dark:bg-[#1e293b]">
+                          {faculties.map((faculty) => (
+                            <SelectItem key={faculty.name} value={faculty.name} className="rounded-lg cursor-pointer">
+                              {faculty.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-xs text-red-500 mt-0.5" />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Program field */}
+                <FormField
+                  control={form.control}
+                  name="program"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">หลักสูตร</FormLabel>
+                      <Select
+                        onValueChange={(val) => { field.onChange(val); form.setValue("major", "") }}
+                        value={field.value}
+                        disabled={!selectedFaculty || programs.length === 0}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:focus:border-blue-500 dark:focus:bg-slate-800">
+                            <SelectValue
+                              placeholder={selectedFaculty ? "เลือกหลักสูตร" : "เลือกคณะก่อน"}
+                            />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="rounded-xl border border-slate-100 shadow-md dark:border-slate-800 dark:bg-[#1e293b]">
+                          {programs.map((program) => (
+                            <SelectItem key={program.name} value={program.name} className="rounded-lg cursor-pointer">
+                              {program.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage className="text-xs text-red-500 mt-0.5" />
                     </FormItem>
                   )}
@@ -267,13 +356,28 @@ export default function ProfileSetupPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">สาขาวิชา</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="เช่น วิทยาการคอมพิวเตอร์"
-                          {...field}
-                          className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800"
-                        />
-                      </FormControl>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        disabled={!selectedProgram || majors.length === 0}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:focus:border-blue-500 dark:focus:bg-slate-800">
+                            <SelectValue
+                              placeholder={
+                                selectedProgram ? "เลือกสาขาวิชา" : "เลือกหลักสูตรก่อน"
+                              }
+                            />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="rounded-xl border border-slate-100 shadow-md dark:border-slate-800 dark:bg-[#1e293b]">
+                          {majors.map((major) => (
+                            <SelectItem key={major.name} value={major.name} className="rounded-lg cursor-pointer">
+                              {major.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage className="text-xs text-red-500 mt-0.5" />
                     </FormItem>
                   )}

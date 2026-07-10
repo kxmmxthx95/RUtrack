@@ -22,6 +22,7 @@ export interface UserProfile {
   academic_year: number
   campus_type: CampusType
   faculty: string
+  program?: string
   major: string
   student_id: string // 10 digits
   title?: string
