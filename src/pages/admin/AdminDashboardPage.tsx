@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import { ArrowRight, Library, Users } from "lucide-react"
+import {
+  IoArrowForwardOutline as ArrowRight,
+  IoLibraryOutline as Library,
+  IoPeopleOutline as Users,
+} from "react-icons/io5"
 import { countMasterCourses, countUsers } from "@/lib/admin"
 import { Button } from "@/components/ui/button"
 import {

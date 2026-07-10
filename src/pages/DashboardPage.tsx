@@ -1,5 +1,9 @@
 import { Link } from "react-router-dom"
-import { ArrowRight, BookOpen, GraduationCap } from "lucide-react"
+import {
+  IoArrowForwardOutline as ArrowRight,
+  IoBookOutline as BookOpen,
+  IoSchoolOutline as GraduationCap,
+} from "react-icons/io5"
 import { useAuth } from "@/contexts/AuthContext"
 import { useCourses } from "@/hooks/useCourses"
 import { DEGREE_TOTAL_CREDITS } from "@/lib/courses"

@@ -1,6 +1,11 @@
 import { useMemo, useState } from "react"
 import { Link } from "react-router-dom"
-import { CalendarDays, ChevronLeft, ChevronRight, Plus } from "lucide-react"
+import {
+  IoCalendarOutline as CalendarDays,
+  IoChevronBackOutline as ChevronLeft,
+  IoChevronForwardOutline as ChevronRight,
+  IoAddOutline as Plus,
+} from "react-icons/io5"
 import { useCourses } from "@/hooks/useCourses"
 import { useExams, type ExamEntry } from "@/hooks/useExams"
 import { Badge } from "@/components/ui/badge"

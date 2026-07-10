@@ -1,4 +1,4 @@
-import { Box } from "lucide-react"
+import { IoCubeOutline as Box } from "react-icons/io5"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {

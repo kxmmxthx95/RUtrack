@@ -1,5 +1,9 @@
 import { Link } from "react-router-dom"
-import { BookOpen, Pencil, Trash2 } from "lucide-react"
+import {
+  IoBookOutline as BookOpen,
+  IoPencilOutline as Pencil,
+  IoTrashOutline as Trash2,
+} from "react-icons/io5"
 import { useMilestones } from "@/hooks/useCourses"
 import type { Course, CourseStatus } from "@/types"
 import { Badge } from "@/components/ui/badge"

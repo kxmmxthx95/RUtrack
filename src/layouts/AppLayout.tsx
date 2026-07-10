@@ -1,13 +1,13 @@
 import { NavLink, Outlet, useNavigate } from "react-router-dom"
 import {
-  BookOpen,
-  CalendarDays,
-  GraduationCap,
-  LayoutDashboard,
-  LogOut,
-  ShieldCheck,
-  TrendingUp,
-} from "lucide-react"
+  IoBookOutline as BookOpen,
+  IoCalendarOutline as CalendarDays,
+  IoSchool as GraduationCap,
+  IoGridOutline as LayoutDashboard,
+  IoLogOutOutline as LogOut,
+  IoShieldCheckmarkOutline as ShieldCheck,
+  IoTrendingUpOutline as TrendingUp,
+} from "react-icons/io5"
 import { useAuth } from "@/contexts/AuthContext"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"

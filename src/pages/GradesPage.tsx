@@ -1,5 +1,11 @@
 import { useMemo, useState } from "react"
-import { ArrowDown, ArrowUp, Minus, RotateCcw, TrendingUp } from "lucide-react"
+import {
+  IoArrowDownOutline as ArrowDown,
+  IoArrowUpOutline as ArrowUp,
+  IoRemoveOutline as Minus,
+  IoRefreshOutline as RotateCcw,
+  IoTrendingUpOutline as TrendingUp,
+} from "react-icons/io5"
 import { useCourses } from "@/hooks/useCourses"
 import { GRADE_POINTS, type Course, type Grade } from "@/types"
 import { Badge } from "@/components/ui/badge"

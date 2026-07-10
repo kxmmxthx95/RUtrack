@@ -2,16 +2,16 @@ import { useEffect, useState } from "react"
 import { Link, useNavigate, useParams } from "react-router-dom"
 import { doc, onSnapshot } from "firebase/firestore"
 import {
-  ArrowLeft,
-  BookMarked,
-  CalendarClock,
-  ClipboardList,
-  FileQuestion,
-  GraduationCap,
-  Pencil,
-  Plus,
-  Trash2,
-} from "lucide-react"
+  IoArrowBackOutline as ArrowLeft,
+  IoBookmarkOutline as BookMarked,
+  IoTimeOutline as CalendarClock,
+  IoClipboardOutline as ClipboardList,
+  IoHelpCircleOutline as FileQuestion,
+  IoSchoolOutline as GraduationCap,
+  IoPencilOutline as Pencil,
+  IoAddOutline as Plus,
+  IoTrashOutline as Trash2,
+} from "react-icons/io5"
 import { toast } from "sonner"
 import { db } from "@/lib/firebase"
 import { deleteMilestone, updateMilestone } from "@/lib/courses"

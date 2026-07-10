@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { BookOpen, Plus } from "lucide-react"
+import { IoBookOutline as BookOpen, IoAddOutline as Plus } from "react-icons/io5"
 import { toast } from "sonner"
 import { useCourses } from "@/hooks/useCourses"
 import { deleteCourse } from "@/lib/courses"

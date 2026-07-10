@@ -2,7 +2,13 @@ import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { Library, Pencil, Plus, Sprout, Trash2 } from "lucide-react"
+import {
+  IoLibraryOutline as Library,
+  IoPencilOutline as Pencil,
+  IoAddOutline as Plus,
+  IoLeafOutline as Sprout,
+  IoTrashOutline as Trash2,
+} from "react-icons/io5"
 import { toast } from "sonner"
 import {
   addMasterCourse,

@@ -1,13 +1,13 @@
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom"
 import {
-  ArrowLeft,
-  LayoutDashboard,
-  Library,
-  LogOut,
-  Settings,
-  ShieldCheck,
-  Users,
-} from "lucide-react"
+  IoArrowBackOutline as ArrowLeft,
+  IoGridOutline as LayoutDashboard,
+  IoLibraryOutline as Library,
+  IoLogOutOutline as LogOut,
+  IoSettingsOutline as Settings,
+  IoShieldCheckmarkOutline as ShieldCheck,
+  IoPeopleOutline as Users,
+} from "react-icons/io5"
 import { useAuth } from "@/contexts/AuthContext"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
