@@ -105,7 +105,7 @@ export default function DashboardPage() {
             </>
           )
 
-          const commonClassName = "relative flex-1 md:hover:flex-[2] group rounded-3xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800/60 transition-all duration-500 ease-out cursor-pointer h-full"
+          const commonClassName = "relative flex-1 md:hover:flex-[2] group rounded-xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800/60 transition-all duration-500 ease-out cursor-pointer h-full"
 
           if (item.isLogout) {
             return (
