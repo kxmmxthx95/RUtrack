@@ -24,6 +24,10 @@ export interface UserProfile {
   faculty: string
   major: string
   student_id: string // 10 digits
+  title?: string
+  first_name?: string
+  last_name?: string
+  phone_number?: string
   additional_info: {
     commute_distance_km?: number
     commute_minutes_per_day?: number

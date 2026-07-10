@@ -9,13 +9,6 @@ import type { CampusType, UserProfile } from "@/types"
 import { Input } from "@/components/ui/input"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
   Form,
   FormControl,
   FormDescription,
@@ -36,22 +29,35 @@ const profileSchema = z.object({
   student_id: z
     .string()
     .regex(/^\d{10}$/, "รหัสนักศึกษาต้องมี 10 หลักพอดี"),
-  academic_year: z.number().int().min(1).max(8),
+  academic_year: z.number().int().min(1).max(8).optional().default(1),
   campus_type: z.enum(["main", "bangna", "regional", "online"]),
   faculty: z.string().min(1, "กรุณากรอกคณะ"),
   major: z.string().min(1, "กรุณากรอกสาขาวิชา"),
+  title: z.string().min(1, "กรุณากรอกคำนำหน้า"),
+  first_name: z.string().min(1, "กรุณากรอกชื่อ"),
+  last_name: z.string().min(1, "กรุณากรอกนามสกุล"),
+  phone_number: z
+    .string()
+    .min(1, "กรุณากรอกเบอร์โทรศัพท์")
+    .regex(/^\d{9,10}$/, "เบอร์โทรศัพท์ต้องมี 9-10 หลัก"),
   commute_distance_km: z
     .number()
     .min(0, "ต้องเป็น 0 หรือมากกว่า")
-    .max(1000, "ระยะทางไกลเกินไป"),
+    .max(1000, "ระยะทางไกลเกินไป")
+    .optional()
+    .default(0),
   commute_minutes_per_day: z
     .number()
     .min(0, "ต้องเป็น 0 หรือมากกว่า")
-    .max(1440, "ต้องไม่เกิน 24 ชั่วโมง"),
+    .max(1440, "ต้องไม่เกิน 24 ชั่วโมง")
+    .optional()
+    .default(0),
   work_hours_per_week: z
     .number()
     .min(0, "ต้องเป็น 0 หรือมากกว่า")
-    .max(168, "ต้องไม่เกิน 168 ชั่วโมง"),
+    .max(168, "ต้องไม่เกิน 168 ชั่วโมง")
+    .optional()
+    .default(0),
 })
 
 type ProfileFormValues = z.infer<typeof profileSchema>
@@ -60,14 +66,18 @@ export default function ProfileSetupPage() {
   const { user, profile, refreshProfile } = useAuth()
   const navigate = useNavigate()
 
-  const form = useForm<ProfileFormValues>({
+  const form = useForm({
     resolver: zodResolver(profileSchema),
     defaultValues: {
       student_id: profile?.student_id ?? "",
-      academic_year: profile?.academic_year ?? 4,
+      academic_year: profile?.academic_year ?? 1,
       campus_type: profile?.campus_type ?? "main",
       faculty: profile?.faculty ?? "",
       major: profile?.major ?? "",
+      title: profile?.title ?? "",
+      first_name: profile?.first_name ?? "",
+      last_name: profile?.last_name ?? "",
+      phone_number: profile?.phone_number ?? "",
       commute_distance_km:
         Number(profile?.additional_info?.commute_distance_km ?? 0),
       commute_minutes_per_day:
@@ -81,14 +91,18 @@ export default function ProfileSetupPage() {
     if (!user) return
     const data: UserProfile = {
       student_id: values.student_id,
-      academic_year: values.academic_year,
+      academic_year: values.academic_year ?? 1,
       campus_type: values.campus_type,
       faculty: values.faculty,
       major: values.major,
+      title: values.title,
+      first_name: values.first_name,
+      last_name: values.last_name,
+      phone_number: values.phone_number,
       additional_info: {
-        commute_distance_km: values.commute_distance_km,
-        commute_minutes_per_day: values.commute_minutes_per_day,
-        work_hours_per_week: values.work_hours_per_week,
+        commute_distance_km: values.commute_distance_km ?? 0,
+        commute_minutes_per_day: values.commute_minutes_per_day ?? 0,
+        work_hours_per_week: values.work_hours_per_week ?? 0,
       },
     }
     try {
@@ -114,59 +128,44 @@ export default function ProfileSetupPage() {
         <div className="mt-8">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-6">
-              <div className="grid gap-6 sm:grid-cols-2">
-                
-                {/* Student ID field */}
-                <FormField
-                  control={form.control}
-                  name="student_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">รหัสนักศึกษา</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="6612345678"
-                          inputMode="numeric"
-                          maxLength={10}
-                          {...field}
-                          className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800"
-                        />
-                      </FormControl>
-                      <FormDescription className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">10 หลัก</FormDescription>
-                      <FormMessage className="text-xs text-red-500 mt-0.5" />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Academic Year field */}
-                <FormField
-                  control={form.control}
-                  name="academic_year"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">ชั้นปี</FormLabel>
-                      <Select
-                        onValueChange={(v) => field.onChange(Number(v))}
-                        value={String(field.value)}
+              
+              {/* 1. วิทยาเขต (Campus Type) */}
+              <FormField
+                control={form.control}
+                name="campus_type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">ประเภทวิทยาเขต</FormLabel>
+                    <FormControl>
+                      <RadioGroup
+                        onValueChange={field.onChange}
+                        value={field.value}
+                        className="grid gap-3 sm:grid-cols-2"
                       >
-                        <FormControl>
-                          <SelectTrigger className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:focus:border-blue-500 dark:focus:bg-slate-800">
-                            <SelectValue placeholder="เลือกชั้นปี" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="rounded-xl border border-slate-100 shadow-md dark:border-slate-800 dark:bg-[#1e293b]">
-                          {[1, 2, 3, 4, 5, 6, 7, 8].map((y) => (
-                            <SelectItem key={y} value={String(y)} className="rounded-lg cursor-pointer">
-                              ชั้นปีที่ {y}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage className="text-xs text-red-500 mt-0.5" />
-                    </FormItem>
-                  )}
-                />
+                        {CAMPUS_OPTIONS.map((opt) => (
+                          <FormItem key={opt.value}>
+                            <FormLabel className="flex cursor-pointer items-start gap-3.5 rounded-xl border border-slate-100 bg-slate-50/30 p-4 font-normal transition-all hover:bg-slate-50/80 has-[[data-state=checked]]:border-blue-500 has-[[data-state=checked]]:bg-blue-50/10 dark:border-slate-800 dark:bg-slate-800/20 dark:hover:bg-slate-800/40 dark:has-[[data-state=checked]]:border-blue-500 dark:has-[[data-state=checked]]:bg-blue-500/5">
+                              <FormControl>
+                                <RadioGroupItem value={opt.value} className="mt-0.5 cursor-pointer" />
+                              </FormControl>
+                              <span className="grid gap-0.5">
+                                <span className="font-semibold text-slate-800 dark:text-slate-200">{opt.label}</span>
+                                <span className="text-xs text-slate-400 dark:text-slate-500">
+                                  {opt.hint}
+                                </span>
+                              </span>
+                            </FormLabel>
+                          </FormItem>
+                        ))}
+                      </RadioGroup>
+                    </FormControl>
+                    <FormMessage className="text-xs text-red-500 mt-0.5" />
+                  </FormItem>
+                )}
+              />
 
+              {/* 2. ข้อมูลวิชาการและการติดต่อ */}
+              <div className="grid gap-6 sm:grid-cols-2">
                 {/* Faculty field */}
                 <FormField
                   control={form.control}
@@ -204,43 +203,110 @@ export default function ProfileSetupPage() {
                     </FormItem>
                   )}
                 />
+
+                {/* Student ID field */}
+                <FormField
+                  control={form.control}
+                  name="student_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">รหัสนักศึกษา</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="6612345678"
+                          inputMode="numeric"
+                          maxLength={10}
+                          {...field}
+                          className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800"
+                        />
+                      </FormControl>
+                      <FormDescription className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">10 หลัก</FormDescription>
+                      <FormMessage className="text-xs text-red-500 mt-0.5" />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Phone Number field */}
+                <FormField
+                  control={form.control}
+                  name="phone_number"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">เบอร์โทรศัพท์</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="เช่น 0812345678"
+                          inputMode="tel"
+                          maxLength={10}
+                          {...field}
+                          className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs text-red-500 mt-0.5" />
+                    </FormItem>
+                  )}
+                />
               </div>
 
-              {/* Campus Type field */}
-              <FormField
-                control={form.control}
-                name="campus_type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">ประเภทวิทยาเขต</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        value={field.value}
-                        className="grid gap-3 sm:grid-cols-2"
-                      >
-                        {CAMPUS_OPTIONS.map((opt) => (
-                          <FormItem key={opt.value}>
-                            <FormLabel className="flex cursor-pointer items-start gap-3.5 rounded-xl border border-slate-100 bg-slate-50/30 p-4 font-normal transition-all hover:bg-slate-50/80 has-[[data-state=checked]]:border-blue-500 has-[[data-state=checked]]:bg-blue-50/10 dark:border-slate-800 dark:bg-slate-800/20 dark:hover:bg-slate-800/40 dark:has-[[data-state=checked]]:border-blue-500 dark:has-[[data-state=checked]]:bg-blue-500/5">
-                              <FormControl>
-                                <RadioGroupItem value={opt.value} className="mt-0.5 cursor-pointer" />
-                              </FormControl>
-                              <span className="grid gap-0.5">
-                                <span className="font-semibold text-slate-800 dark:text-slate-200">{opt.label}</span>
-                                <span className="text-xs text-slate-400 dark:text-slate-500">
-                                  {opt.hint}
-                                </span>
-                              </span>
-                            </FormLabel>
-                          </FormItem>
-                        ))}
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage className="text-xs text-red-500 mt-0.5" />
-                  </FormItem>
-                )}
-              />
+              {/* 3. ข้อมูลส่วนตัว (คำนำหน้า ชื่อ นามสกุล) */}
+              <div className="grid gap-6 grid-cols-1 sm:grid-cols-3">
+                {/* Title field */}
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">คำนำหน้า</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="เช่น นาย / นางสาว"
+                          {...field}
+                          className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs text-red-500 mt-0.5" />
+                    </FormItem>
+                  )}
+                />
 
+                {/* First Name field */}
+                <FormField
+                  control={form.control}
+                  name="first_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">ชื่อ</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="สมชาย"
+                          {...field}
+                          className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs text-red-500 mt-0.5" />
+                    </FormItem>
+                  )}
+                />
+
+                {/* Last Name field */}
+                <FormField
+                  control={form.control}
+                  name="last_name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">นามสกุล</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="ใจดี"
+                          {...field}
+                          className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800"
+                        />
+                      </FormControl>
+                      <FormMessage className="text-xs text-red-500 mt-0.5" />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               {/* Submit Button */}
               <button
