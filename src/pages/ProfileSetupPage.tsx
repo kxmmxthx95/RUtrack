@@ -135,9 +135,6 @@ export default function ProfileSetupPage() {
         <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
           ข้อมูลนักศึกษา
         </h1>
-        <p className="mt-1.5 text-[15px] text-slate-500 dark:text-slate-400">
-          บอกเราเกี่ยวกับการเรียนและกิจวัตรประจำวันของคุณ เพื่อให้ RU Track วางแผนเวลาเรียนให้เหมาะกับคุณ
-        </p>
 
         <div className="mt-8">
           <Form {...form}>
