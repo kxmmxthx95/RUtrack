@@ -1,3 +1,4 @@
+import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import {
   IoBookOutline,
@@ -6,6 +7,8 @@ import {
   IoPersonOutline,
   IoShieldCheckmarkOutline,
   IoLogOutOutline,
+  IoChevronBackOutline,
+  IoChevronForwardOutline,
 } from "react-icons/io5"
 import { useAuth } from "@/contexts/AuthContext"
 
@@ -53,29 +56,54 @@ const MENU_ITEMS = [
 export default function DashboardPage() {
   const { logOut } = useAuth()
   const navigate = useNavigate()
+  const [activeIndex, setActiveIndex] = useState(2)
 
   const handleLogout = async () => {
     await logOut()
     navigate("/login", { replace: true })
   }
 
-  // Filter items: If not admin, we can still show all 6 cards to maintain the exact 6-card design layout of the mockup
   const displayedItems = MENU_ITEMS
+
+  // Fan / Coverflow transform generator
+  const getCardStyle = (index: number) => {
+    const diff = index - activeIndex
+    const absDiff = Math.abs(diff)
+    
+    // Arch height adjustment
+    const translateY = absDiff * 14
+    // Rotation for fan shape
+    const rotateZ = diff * 7
+    // Horizontal overlapping offset
+    const translateX = diff * 50
+    // Card scale factor
+    const scale = 1 - absDiff * 0.08
+    // Transparency factor
+    const opacity = 1 - absDiff * 0.18
+    const zIndex = 10 - absDiff
+
+    return {
+      transform: `translateX(${translateX}px) translateY(${translateY}px) rotate(${rotateZ}deg) scale(${scale})`,
+      opacity: opacity > 0 ? opacity : 0,
+      zIndex,
+      transition: "all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)",
+    }
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-8rem)] py-8 px-4">
       {/* Title & Subtitle */}
       <div className="text-center max-w-2xl mb-12">
         <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white sm:text-4xl">
-          Our Latest Creations
+          RU Track Workspace
         </h1>
         <p className="mt-3 text-[15px] leading-relaxed text-slate-500 dark:text-slate-400">
-          A visual collection of our most recent works – each piece crafted with intention, emotion, and style.
+          พื้นที่จัดการตัวเองสำหรับนักศึกษา บันทึกความคืบหน้า วางแผนตารางเวลา และเตรียมพร้อมสำหรับทุกการสอบ
         </p>
       </div>
 
-      {/* 6-Card Expandable Menu Layout */}
-      <div className="flex flex-col md:flex-row gap-1.5 w-full max-w-5xl h-[480px] md:h-[420px] transition-all duration-300">
+      {/* DESKTOP VIEW: 6-Card Expandable Menu Layout */}
+      <div className="hidden md:flex flex-col md:flex-row gap-1.5 w-full max-w-5xl h-[420px] transition-all duration-300">
         {displayedItems.map((item, index) => {
           const Icon = item.icon
           const cardContent = (
@@ -129,6 +157,92 @@ export default function DashboardPage() {
             </Link>
           )
         })}
+      </div>
+
+      {/* MOBILE VIEW: Beautiful cover-flow fan/arch style with white background */}
+      <div className="md:hidden flex flex-col items-center justify-center w-full bg-white dark:bg-slate-900 rounded-3xl py-10 px-4 shadow-sm border border-slate-100 dark:border-slate-800/60 overflow-hidden">
+        {/* Card Stage */}
+        <div className="relative w-full h-[280px] flex items-center justify-center">
+          {displayedItems.map((item, index) => {
+            const Icon = item.icon
+            const isActive = index === activeIndex
+            const cardStyle = getCardStyle(index)
+
+            return (
+              <div
+                key={index}
+                style={cardStyle}
+                onClick={() => {
+                  if (isActive) {
+                    if (item.isLogout) {
+                      handleLogout()
+                    } else {
+                      navigate(item.to)
+                    }
+                  } else {
+                    setActiveIndex(index)
+                  }
+                }}
+                className="absolute w-[140px] h-[220px] rounded-2xl overflow-hidden shadow-md border border-white/20 cursor-pointer origin-bottom"
+              >
+                {/* Image */}
+                <div
+                  className="absolute inset-0 bg-cover bg-center"
+                  style={{ backgroundImage: `url(${item.image})` }}
+                />
+                
+                {/* Dark Overlay */}
+                <div className={`absolute inset-0 transition-colors duration-300 ${isActive ? 'bg-black/20' : 'bg-black/45'}`} />
+
+                {/* Center Icon */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className={`flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-300 ${isActive ? 'bg-white text-slate-900 scale-100' : 'bg-white/20 backdrop-blur-sm text-white scale-90'}`}>
+                    <Icon className="size-5" />
+                  </div>
+                </div>
+
+                {/* Label (only shown for active card) */}
+                {isActive && (
+                  <div className="absolute bottom-3 left-0 right-0 text-center animate-fade-in">
+                    <span className="inline-block px-2.5 py-1 rounded-full bg-white/25 backdrop-blur-md border border-white/20 text-[9px] font-semibold text-white tracking-wide uppercase">
+                      {item.label}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Navigation & Pagination */}
+        <div className="flex items-center gap-6 mt-6">
+          {/* Prev Button */}
+          <button
+            onClick={() => setActiveIndex((prev) => (prev > 0 ? prev - 1 : displayedItems.length - 1))}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-95 shadow-sm transition-all cursor-pointer"
+          >
+            <IoChevronBackOutline className="size-4" />
+          </button>
+
+          {/* Pagination Dots */}
+          <div className="flex items-center gap-1.5">
+            {displayedItems.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setActiveIndex(index)}
+                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${index === activeIndex ? 'w-4 bg-slate-800 dark:bg-white' : 'w-1.5 bg-slate-300 dark:bg-slate-700'}`}
+              />
+            ))}
+          </div>
+
+          {/* Next Button */}
+          <button
+            onClick={() => setActiveIndex((prev) => (prev < displayedItems.length - 1 ? prev + 1 : 0))}
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-95 shadow-sm transition-all cursor-pointer"
+          >
+            <IoChevronForwardOutline className="size-4" />
+          </button>
+        </div>
       </div>
     </div>
   )
