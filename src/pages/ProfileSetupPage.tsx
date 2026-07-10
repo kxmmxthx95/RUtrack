@@ -9,6 +9,13 @@ import type { CampusType, UserProfile } from "@/types"
 import { Input } from "@/components/ui/input"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import {
   Form,
   FormControl,
   FormDescription,
@@ -23,6 +30,8 @@ const CAMPUS_OPTIONS: { value: CampusType; label: string; hint: string }[] = [
   { value: "bangna", label: "วิทยาเขตบางนา", hint: "วิทยาเขต 2" },
   { value: "regional", label: "วิทยาเขตส่วนภูมิภาค", hint: "ศูนย์ต่างจังหวัด" },
 ]
+
+const TITLE_OPTIONS = ["นาย", "นางสาว", "นาง"]
 
 const profileSchema = z.object({
   student_id: z
@@ -256,13 +265,20 @@ export default function ProfileSetupPage() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">คำนำหน้า</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="เช่น นาย / นางสาว"
-                          {...field}
-                          className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800"
-                        />
-                      </FormControl>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:focus:border-blue-500 dark:focus:bg-slate-800">
+                            <SelectValue placeholder="เลือกคำนำหน้า" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="rounded-xl border border-slate-100 shadow-md dark:border-slate-800 dark:bg-[#1e293b]">
+                          {TITLE_OPTIONS.map((t) => (
+                            <SelectItem key={t} value={t} className="rounded-lg cursor-pointer">
+                              {t}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage className="text-xs text-red-500 mt-0.5" />
                     </FormItem>
                   )}
