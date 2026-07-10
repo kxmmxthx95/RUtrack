@@ -254,7 +254,7 @@ export default function ProfileSetupPage() {
               </div>
 
               {/* ข้อมูลการติดต่อและรหัสนักศึกษา */}
-              <div className="grid gap-6 sm:grid-cols-2">
+              <div className="grid gap-6 grid-cols-1 sm:grid-cols-3">
                 {/* Student ID field */}
                 <FormField
                   control={form.control}
@@ -296,6 +296,9 @@ export default function ProfileSetupPage() {
                     </FormItem>
                   )}
                 />
+
+                {/* Spacer to align with name columns */}
+                <div className="hidden sm:block" />
               </div>
 
               {/* 1. วิทยาเขต (Campus Type) */}
