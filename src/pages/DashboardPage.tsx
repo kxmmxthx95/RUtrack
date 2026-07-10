@@ -160,7 +160,7 @@ export default function DashboardPage() {
       </div>
 
       {/* MOBILE VIEW: Beautiful cover-flow fan/arch style with white background */}
-      <div className="md:hidden flex flex-col items-center justify-center w-full bg-white dark:bg-slate-900 rounded-3xl py-10 px-4 shadow-sm border border-slate-100 dark:border-slate-800/60 overflow-hidden">
+      <div className="md:hidden flex flex-col items-center justify-center w-full bg-white dark:bg-slate-900 py-10 px-4 overflow-hidden">
         {/* Card Stage */}
         <div className="relative w-full h-[280px] flex items-center justify-center">
           {displayedItems.map((item, index) => {
