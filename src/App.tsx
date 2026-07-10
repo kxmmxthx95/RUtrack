@@ -5,6 +5,7 @@ import {
   RedirectIfAuthed,
   RequireAdmin,
   RequireAuth,
+  RequireNoProfile,
   RequireProfile,
 } from "@/components/ProtectedRoute"
 import AppLayout from "@/layouts/AppLayout"
@@ -34,7 +35,9 @@ function App() {
           </Route>
 
           <Route element={<RequireAuth />}>
-            <Route path="/setup" element={<ProfileSetupPage />} />
+            <Route element={<RequireNoProfile />}>
+              <Route path="/setup" element={<ProfileSetupPage />} />
+            </Route>
             <Route element={<RequireProfile />}>
               <Route element={<AppLayout />}>
                 <Route index element={<DashboardPage />} />
