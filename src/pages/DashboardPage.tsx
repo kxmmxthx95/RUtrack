@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import {
   IoBookOutline,
@@ -11,6 +11,7 @@ import {
   IoChevronForwardOutline,
 } from "react-icons/io5"
 import { useAuth } from "@/contexts/AuthContext"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const MENU_ITEMS = [
   {
@@ -57,6 +58,12 @@ export default function DashboardPage() {
   const { logOut } = useAuth()
   const navigate = useNavigate()
   const [activeIndex, setActiveIndex] = useState(2)
+  const [pageLoading, setPageLoading] = useState(true)
+
+  useEffect(() => {
+    const timer = setTimeout(() => setPageLoading(false), 500)
+    return () => clearTimeout(timer)
+  }, [])
 
   const handleLogout = async () => {
     await logOut()
@@ -128,152 +135,173 @@ export default function DashboardPage() {
       </div>
 
       {/* DESKTOP VIEW: 6-Card Expandable Menu Layout */}
-      <div className="hidden md:flex flex-col md:flex-row gap-1.5 w-full max-w-5xl h-[420px] transition-all duration-300">
-        {displayedItems.map((item, index) => {
-          const Icon = item.icon
-          const cardContent = (
-            <>
-              {/* Card Image */}
-              <div
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
-                style={{ backgroundImage: `url(${item.image})` }}
-              />
+      {pageLoading ? (
+        <div className="hidden md:flex gap-1.5 w-full max-w-5xl h-[420px]">
+          {[...Array(6)].map((_, i) => (
+            <Skeleton key={i} className="flex-1 rounded-xl h-full" />
+          ))}
+        </div>
+      ) : (
+        <div className="hidden md:flex flex-col md:flex-row gap-1.5 w-full max-w-5xl h-[420px] transition-all duration-300">
+          {displayedItems.map((item, index) => {
+            const Icon = item.icon
+            const cardContent = (
+              <>
+                {/* Card Image */}
+                <div
+                  className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
+                  style={{ backgroundImage: `url(${item.image})` }}
+                />
 
-              {/* Clean Dark Overlay */}
-              <div className="absolute inset-0 bg-black/15 group-hover:bg-black/30 transition-colors duration-300" />
+                {/* Clean Dark Overlay */}
+                <div className="absolute inset-0 bg-black/15 group-hover:bg-black/30 transition-colors duration-300" />
 
-              {/* Centered Icon - replaces text name on the card */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 backdrop-blur-md border border-white/20 text-white shadow-md transition-all duration-300 group-hover:scale-110 group-hover:bg-white group-hover:text-slate-900 group-hover:border-white">
-                  <Icon className="size-6" />
+                {/* Centered Icon - replaces text name on the card */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/20 backdrop-blur-md border border-white/20 text-white shadow-md transition-all duration-300 group-hover:scale-110 group-hover:bg-white group-hover:text-slate-900 group-hover:border-white">
+                    <Icon className="size-6" />
+                  </div>
                 </div>
-              </div>
 
-              {/* Subtle Tooltip Label shown on hover at the bottom */}
-              <div className="absolute bottom-5 left-0 right-0 text-center opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 pointer-events-none">
-                <span className="inline-block px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-[11px] font-semibold text-white tracking-wide uppercase">
-                  {item.label}
-                </span>
-              </div>
-            </>
-          )
+                {/* Subtle Tooltip Label shown on hover at the bottom */}
+                <div className="absolute bottom-5 left-0 right-0 text-center opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 pointer-events-none">
+                  <span className="inline-block px-3.5 py-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/20 text-[11px] font-semibold text-white tracking-wide uppercase">
+                    {item.label}
+                  </span>
+                </div>
+              </>
+            )
 
-          const commonClassName = "relative flex-1 md:hover:flex-[2] group rounded-xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800/60 transition-all duration-500 ease-out cursor-pointer h-full"
+            const commonClassName = "relative flex-1 md:hover:flex-[2] group rounded-xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800/60 transition-all duration-500 ease-out cursor-pointer h-full"
 
-          if (item.isLogout) {
+            if (item.isLogout) {
+              return (
+                <div
+                  key={index}
+                  onClick={handleLogout}
+                  className={commonClassName}
+                >
+                  {cardContent}
+                </div>
+              )
+            }
+
             return (
-              <div
+              <Link
                 key={index}
-                onClick={handleLogout}
+                to={item.to}
                 className={commonClassName}
               >
                 {cardContent}
-              </div>
-            )
-          }
-
-          return (
-            <Link
-              key={index}
-              to={item.to}
-              className={commonClassName}
-            >
-              {cardContent}
-            </Link>
-          )
-        })}
-      </div>
-
-      {/* MOBILE VIEW: Beautiful cover-flow fan/arch style with white background */}
-      <div 
-        className="md:hidden flex flex-col items-center justify-center -mx-4 w-[calc(100%+2rem)] bg-white dark:bg-slate-900 py-10 px-0 overflow-hidden select-none touch-pan-y"
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-      >
-        {/* Card Stage */}
-        <div className="relative w-full h-[320px] flex items-center justify-center">
-          {displayedItems.map((item, index) => {
-            const Icon = item.icon
-            const isActive = index === activeIndex
-            const cardStyle = getCardStyle(index)
-
-            return (
-              <div
-                key={index}
-                style={cardStyle}
-                onClick={() => {
-                  if (isActive) {
-                    if (item.isLogout) {
-                      handleLogout()
-                    } else {
-                      navigate(item.to)
-                    }
-                  } else {
-                    setActiveIndex(index)
-                  }
-                }}
-                className="absolute w-[180px] h-[280px] rounded-2xl overflow-hidden shadow-md border border-white/20 cursor-pointer origin-bottom"
-              >
-                {/* Image */}
-                <div
-                  className="absolute inset-0 bg-cover bg-center"
-                  style={{ backgroundImage: `url(${item.image})` }}
-                />
-                
-                {/* Dark Overlay */}
-                <div className={`absolute inset-0 transition-colors duration-300 ${isActive ? 'bg-black/20' : 'bg-black/45'}`} />
-
-                {/* Center Icon */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className={`flex h-14 w-14 items-center justify-center rounded-2xl transition-all duration-300 ${isActive ? 'bg-white text-slate-900 scale-100' : 'bg-white/20 backdrop-blur-sm text-white scale-90'}`}>
-                    <Icon className="size-7" />
-                  </div>
-                </div>
-
-                {/* Label (only shown for active card) */}
-                {isActive && (
-                  <div className="absolute bottom-5 left-0 right-0 text-center animate-fade-in">
-                    <span className="inline-block px-3 py-1.5 rounded-full bg-white/25 backdrop-blur-md border border-white/20 text-[11px] font-semibold text-white tracking-wide uppercase">
-                      {item.label}
-                    </span>
-                  </div>
-                )}
-              </div>
+              </Link>
             )
           })}
         </div>
+      )}
 
-        {/* Navigation & Pagination */}
-        <div className="flex items-center gap-6 mt-6">
-          {/* Prev Button */}
-          <button
-            onClick={() => setActiveIndex((prev) => (prev > 0 ? prev - 1 : displayedItems.length - 1))}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-95 shadow-sm transition-all cursor-pointer"
-          >
-            <IoChevronBackOutline className="size-4" />
-          </button>
+      {/* MOBILE VIEW: Beautiful cover-flow fan/arch style with white background */}
+      {pageLoading ? (
+        <div className="md:hidden flex flex-col items-center justify-center -mx-4 w-[calc(100%+2rem)] bg-white dark:bg-slate-900 py-10 px-0 overflow-hidden">
+          <div className="relative w-full h-[320px] flex items-center justify-center">
+            <Skeleton className="w-[180px] h-[280px] rounded-2xl" />
+          </div>
+          <div className="flex items-center gap-6 mt-6">
+            <Skeleton className="h-9 w-9 rounded-full" />
+            <Skeleton className="h-2 w-24 rounded-full" />
+            <Skeleton className="h-9 w-9 rounded-full" />
+          </div>
+        </div>
+      ) : (
+        <div 
+          className="md:hidden flex flex-col items-center justify-center -mx-4 w-[calc(100%+2rem)] bg-white dark:bg-slate-900 py-10 px-0 overflow-hidden select-none touch-pan-y"
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+        >
+          {/* Card Stage */}
+          <div className="relative w-full h-[320px] flex items-center justify-center">
+            {displayedItems.map((item, index) => {
+              const Icon = item.icon
+              const isActive = index === activeIndex
+              const cardStyle = getCardStyle(index)
 
-          {/* Pagination Dots */}
-          <div className="flex items-center gap-1.5">
-            {displayedItems.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setActiveIndex(index)}
-                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${index === activeIndex ? 'w-4 bg-slate-800 dark:bg-white' : 'w-1.5 bg-slate-300 dark:bg-slate-700'}`}
-              />
-            ))}
+              return (
+                <div
+                  key={index}
+                  style={cardStyle}
+                  onClick={() => {
+                    if (isActive) {
+                      if (item.isLogout) {
+                        handleLogout()
+                      } else {
+                        navigate(item.to)
+                      }
+                    } else {
+                      setActiveIndex(index)
+                    }
+                  }}
+                  className="absolute w-[180px] h-[280px] rounded-2xl overflow-hidden shadow-md border border-white/20 cursor-pointer origin-bottom"
+                >
+                  {/* Image */}
+                  <div
+                    className="absolute inset-0 bg-cover bg-center"
+                    style={{ backgroundImage: `url(${item.image})` }}
+                  />
+                  
+                  {/* Dark Overlay */}
+                  <div className={`absolute inset-0 transition-colors duration-300 ${isActive ? 'bg-black/20' : 'bg-black/45'}`} />
+
+                  {/* Center Icon */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className={`flex h-14 w-14 items-center justify-center rounded-2xl transition-all duration-300 ${isActive ? 'bg-white text-slate-900 scale-100' : 'bg-white/20 backdrop-blur-sm text-white scale-90'}`}>
+                      <Icon className="size-7" />
+                    </div>
+                  </div>
+
+                  {/* Label (only shown for active card) */}
+                  {isActive && (
+                    <div className="absolute bottom-5 left-0 right-0 text-center animate-fade-in">
+                      <span className="inline-block px-3 py-1.5 rounded-full bg-white/25 backdrop-blur-md border border-white/20 text-[11px] font-semibold text-white tracking-wide uppercase">
+                        {item.label}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
           </div>
 
-          {/* Next Button */}
-          <button
-            onClick={() => setActiveIndex((prev) => (prev < displayedItems.length - 1 ? prev + 1 : 0))}
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-95 shadow-sm transition-all cursor-pointer"
-          >
-            <IoChevronForwardOutline className="size-4" />
-          </button>
+          {/* Navigation & Pagination */}
+          <div className="flex items-center gap-6 mt-6">
+            {/* Prev Button */}
+            <button
+              onClick={() => setActiveIndex((prev) => (prev > 0 ? prev - 1 : displayedItems.length - 1))}
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-95 shadow-sm transition-all cursor-pointer"
+            >
+              <IoChevronBackOutline className="size-4" />
+            </button>
+
+            {/* Pagination Dots */}
+            <div className="flex items-center gap-1.5">
+              {displayedItems.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setActiveIndex(index)}
+                  className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${index === activeIndex ? 'w-4 bg-slate-800 dark:bg-white' : 'w-1.5 bg-slate-300 dark:bg-slate-700'}`}
+                />
+              ))}
+            </div>
+
+            {/* Next Button */}
+            <button
+              onClick={() => setActiveIndex((prev) => (prev < displayedItems.length - 1 ? prev + 1 : 0))}
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-95 shadow-sm transition-all cursor-pointer"
+            >
+              <IoChevronForwardOutline className="size-4" />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }
