@@ -22,7 +22,6 @@ const CAMPUS_OPTIONS: { value: CampusType; label: string; hint: string }[] = [
   { value: "main", label: "วิทยาเขตหลัก", hint: "หัวหมาก กรุงเทพฯ" },
   { value: "bangna", label: "วิทยาเขตบางนา", hint: "วิทยาเขต 2" },
   { value: "regional", label: "วิทยาเขตส่วนภูมิภาค", hint: "ศูนย์ต่างจังหวัด" },
-  { value: "online", label: "ออนไลน์ / ทางไกล", hint: "เรียนทางไกล" },
 ]
 
 const profileSchema = z.object({
