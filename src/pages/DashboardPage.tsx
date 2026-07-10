@@ -1,12 +1,14 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import {
   IoBookOutline,
   IoCalendarOutline,
   IoTrendingUpOutline,
   IoPersonOutline,
   IoShieldCheckmarkOutline,
-  IoColorPaletteOutline,
+  IoLogOutOutline,
 } from "react-icons/io5"
+import { useAuth } from "@/contexts/AuthContext"
+
 const MENU_ITEMS = [
   {
     to: "/courses",
@@ -40,14 +42,22 @@ const MENU_ITEMS = [
     adminOnly: true,
   },
   {
-    to: "/theme",
-    icon: IoColorPaletteOutline,
+    to: "/login",
+    icon: IoLogOutOutline,
     image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&auto=format&fit=crop&q=80",
-    label: "ตัวอย่างธีม",
+    label: "ออกจากระบบ",
+    isLogout: true,
   },
 ]
 
 export default function DashboardPage() {
+  const { logOut } = useAuth()
+  const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    await logOut()
+    navigate("/login", { replace: true })
+  }
 
   // Filter items: If not admin, we can still show all 6 cards to maintain the exact 6-card design layout of the mockup
   const displayedItems = MENU_ITEMS
@@ -68,13 +78,8 @@ export default function DashboardPage() {
       <div className="flex flex-col md:flex-row gap-3.5 w-full max-w-5xl h-[480px] md:h-[420px] transition-all duration-300">
         {displayedItems.map((item, index) => {
           const Icon = item.icon
-          // If adminOnly and user is not admin, we can gracefully redirect or shade it, but let's keep it clickable to respect route level handling
-          return (
-            <Link
-              key={index}
-              to={item.to}
-              className="relative flex-1 md:hover:flex-[2] group rounded-3xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800/60 transition-all duration-500 ease-out cursor-pointer h-full"
-            >
+          const cardContent = (
+            <>
               {/* Card Image */}
               <div
                 className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
@@ -97,6 +102,30 @@ export default function DashboardPage() {
                   {item.label}
                 </span>
               </div>
+            </>
+          )
+
+          const commonClassName = "relative flex-1 md:hover:flex-[2] group rounded-3xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-800/60 transition-all duration-500 ease-out cursor-pointer h-full"
+
+          if (item.isLogout) {
+            return (
+              <div
+                key={index}
+                onClick={handleLogout}
+                className={commonClassName}
+              >
+                {cardContent}
+              </div>
+            )
+          }
+
+          return (
+            <Link
+              key={index}
+              to={item.to}
+              className={commonClassName}
+            >
+              {cardContent}
             </Link>
           )
         })}
