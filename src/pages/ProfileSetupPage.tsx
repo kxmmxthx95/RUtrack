@@ -39,6 +39,25 @@ const CAMPUS_OPTIONS: { value: CampusType; label: string; hint: string }[] = [
 
 const TITLE_OPTIONS = ["นาย", "นางสาว", "นาง"]
 
+function formatPhoneNumber(value: string) {
+  const clean = value.replace(/\D/g, "")
+  if (
+    clean.startsWith("02") ||
+    clean.startsWith("03") ||
+    clean.startsWith("04") ||
+    clean.startsWith("05") ||
+    clean.startsWith("07")
+  ) {
+    if (clean.length <= 2) return clean
+    if (clean.length <= 5) return `${clean.slice(0, 2)}-${clean.slice(2)}`
+    return `${clean.slice(0, 2)}-${clean.slice(2, 5)}-${clean.slice(5, 9)}`
+  } else {
+    if (clean.length <= 3) return clean
+    if (clean.length <= 6) return `${clean.slice(0, 3)}-${clean.slice(3)}`
+    return `${clean.slice(0, 3)}-${clean.slice(3, 6)}-${clean.slice(6, 10)}`
+  }
+}
+
 const profileSchema = z.object({
   student_id: z
     .string()
@@ -54,7 +73,10 @@ const profileSchema = z.object({
   phone_number: z
     .string()
     .min(1, "กรุณากรอกเบอร์โทรศัพท์")
-    .regex(/^\d{9,10}$/, "เบอร์โทรศัพท์ต้องมี 9-10 หลัก"),
+    .refine((val) => {
+      const clean = val.replace(/\D/g, "")
+      return clean.length === 9 || clean.length === 10
+    }, "เบอร์โทรศัพท์ต้องมี 9-10 หลัก"),
   commute_distance_km: z
     .number()
     .min(0, "ต้องเป็น 0 หรือมากกว่า")
@@ -285,10 +307,14 @@ export default function ProfileSetupPage() {
                       <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">เบอร์โทรศัพท์</FormLabel>
                       <FormControl>
                         <Input
-                          placeholder="เช่น 0812345678"
+                          placeholder="เช่น 081-234-5678"
                           inputMode="tel"
-                          maxLength={10}
+                          maxLength={12}
                           {...field}
+                          onChange={(e) => {
+                            const formatted = formatPhoneNumber(e.target.value)
+                            field.onChange(formatted)
+                          }}
                           className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 placeholder-slate-400 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:placeholder-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800"
                         />
                       </FormControl>
