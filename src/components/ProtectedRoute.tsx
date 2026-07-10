@@ -53,9 +53,18 @@ export function RequireAdmin() {
 
 /** For /login and /register: bounce signed-in users to the app. */
 export function RedirectIfAuthed() {
-  const { user, loading } = useAuth()
+  const { user, profile, loading } = useAuth()
 
   if (loading) return <FullPageLoader />
-  if (user) return <Navigate to="/" replace />
+  if (user) return <Navigate to={profile?.is_admin ? "/admin" : "/"} replace />
+  return <Outlet />
+}
+
+/** For student routes: redirects admin users to /admin. */
+export function RequireStudent() {
+  const { profile, loading } = useAuth()
+
+  if (loading) return <FullPageLoader />
+  if (profile?.is_admin) return <Navigate to="/admin" replace />
   return <Outlet />
 }

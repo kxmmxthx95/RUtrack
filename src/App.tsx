@@ -7,6 +7,7 @@ import {
   RequireAuth,
   RequireNoProfile,
   RequireProfile,
+  RequireStudent,
 } from "@/components/ProtectedRoute"
 import AppLayout from "@/layouts/AppLayout"
 import AdminLayout from "@/layouts/AdminLayout"
@@ -39,15 +40,17 @@ function App() {
               <Route path="/setup" element={<ProfileSetupPage />} />
             </Route>
             <Route element={<RequireProfile />}>
-              <Route element={<AppLayout />}>
-                <Route index element={<DashboardPage />} />
-                <Route path="/courses" element={<CoursesPage />} />
-                <Route
-                  path="/courses/:courseId"
-                  element={<CourseDetailPage />}
-                />
-                <Route path="/calendar" element={<CalendarPage />} />
-                <Route path="/grades" element={<GradesPage />} />
+              <Route element={<RequireStudent />}>
+                <Route element={<AppLayout />}>
+                  <Route index element={<DashboardPage />} />
+                  <Route path="/courses" element={<CoursesPage />} />
+                  <Route
+                    path="/courses/:courseId"
+                    element={<CourseDetailPage />}
+                  />
+                  <Route path="/calendar" element={<CalendarPage />} />
+                  <Route path="/grades" element={<GradesPage />} />
+                </Route>
               </Route>
               <Route element={<RequireAdmin />}>
                 <Route path="/admin" element={<AdminLayout />}>
