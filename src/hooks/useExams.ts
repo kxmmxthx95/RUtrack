@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
+import { useAuth } from "@/contexts/AuthContext"
 import { listenToMilestones } from "@/lib/courses"
 import type { Course, Milestone } from "@/types"
 
@@ -15,6 +16,7 @@ export interface ExamEntry {
  * (fine for a typical 7-subject load).
  */
 export function useExams(courses: Course[]) {
+  const { user } = useAuth()
   const [examsByCourse, setExamsByCourse] = useState<
     Record<string, ExamEntry[]>
   >({})
@@ -25,11 +27,12 @@ export function useExams(courses: Course[]) {
     .join(",")
 
   useEffect(() => {
+    if (!user) return
     setExamsByCourse({})
     const unsubscribers = courses
       .filter((c): c is Course & { id: string } => Boolean(c.id))
       .map((course) =>
-        listenToMilestones(course.id, (milestones) => {
+        listenToMilestones(user.uid, course.id, (milestones) => {
           const exams = milestones
             .filter((m) => m.milestone_type === "exam")
             .map((m) => ({
@@ -43,7 +46,7 @@ export function useExams(courses: Course[]) {
       )
     return () => unsubscribers.forEach((u) => u())
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [courseIds])
+  }, [courseIds, user])
 
   return useMemo(() => {
     const all = Object.values(examsByCourse).flat()

@@ -39,6 +39,32 @@ const CAMPUS_OPTIONS: { value: CampusType; label: string; hint: string }[] = [
 
 const TITLE_OPTIONS = ["นาย", "นางสาว", "นาง"]
 
+const REGIONAL_PROVINCES = [
+  "กาญจนบุรี",
+  "ขอนแก่น",
+  "ชัยภูมิ",
+  "ตรัง",
+  "นครพนม",
+  "นครราชสีมา",
+  "นครศรีธรรมราช",
+  "บุรีรัมย์",
+  "ปราจีนบุรี",
+  "พังงา",
+  "เพชรบูรณ์",
+  "แพร่",
+  "ลพบุรี",
+  "สงขลา",
+  "ศรีสะเกษ",
+  "สุรินทร์",
+  "สุโขทัย",
+  "หนองบัวลำภู",
+  "อำนาจเจริญ",
+  "อุดรธานี",
+  "อุทัยธานี",
+  "เชียงราย",
+  "เชียงใหม่",
+] as const
+
 function formatPhoneNumber(value: string) {
   const clean = value.replace(/\D/g, "")
   if (
@@ -64,6 +90,7 @@ const profileSchema = z.object({
     .regex(/^\d{10}$/, "รหัสนักศึกษาต้องมี 10 หลักพอดี"),
   academic_year: z.number().int().min(1).max(8).optional().default(1),
   campus_type: z.enum(["main", "bangna", "regional", "online"]),
+  province: z.string().optional(),
   faculty: z.string().min(1, "กรุณากรอกคณะ"),
   program: z.string().min(1, "กรุณาเลือกหลักสูตร"),
   major: z.string().min(1, "กรุณากรอกสาขาวิชา"),
@@ -109,6 +136,7 @@ export default function ProfileSetupPage() {
       student_id: profile?.student_id ?? "",
       academic_year: profile?.academic_year ?? 1,
       campus_type: profile?.campus_type ?? "main",
+      province: profile?.additional_info?.province ?? "",
       faculty: profile?.faculty ?? "",
       program: profile?.program ?? "",
       major: profile?.major ?? "",
@@ -135,6 +163,7 @@ export default function ProfileSetupPage() {
   const selectedFaculty = form.watch("faculty")
   const selectedProgram = form.watch("program")
   const selectedMajor = form.watch("major")
+  const selectedProvince = form.watch("province")
   const programs = useMemo(
     () => getPrograms(catalogCampus, selectedFaculty),
     [catalogCampus, selectedFaculty],
@@ -165,6 +194,12 @@ export default function ProfileSetupPage() {
     }
   }, [form, majors, selectedMajor])
 
+  useEffect(() => {
+    if (campusType !== "regional" && selectedProvince) {
+      form.setValue("province", "")
+    }
+  }, [campusType, form, selectedProvince])
+
   async function onSubmit(values: ProfileFormValues) {
     if (!user) return
     const data: UserProfile = {
@@ -179,6 +214,7 @@ export default function ProfileSetupPage() {
       last_name: values.last_name,
       phone_number: values.phone_number,
       additional_info: {
+        province: values.province ?? "",
         commute_distance_km: values.commute_distance_km ?? 0,
         commute_minutes_per_day: values.commute_minutes_per_day ?? 0,
         work_hours_per_week: values.work_hours_per_week ?? 0,
@@ -188,7 +224,7 @@ export default function ProfileSetupPage() {
       await saveUserProfile(user.uid, data)
       await refreshProfile()
       toast.success("บันทึกโปรไฟล์แล้ว")
-      navigate("/", { replace: true })
+      navigate(profile ? "/profile" : "/", { replace: true })
     } catch {
       toast.error("บันทึกโปรไฟล์ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง")
     }
@@ -361,6 +397,33 @@ export default function ProfileSetupPage() {
                   </FormItem>
                 )}
               />
+
+              {campusType === "regional" && (
+                <FormField
+                  control={form.control}
+                  name="province"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium text-slate-700 dark:text-slate-300">จังหวัด</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="h-10 w-full rounded-xl border border-slate-100 bg-slate-50/60 px-4 text-sm text-slate-800 outline-none transition-all focus:border-blue-500 focus:bg-white focus:ring-2 focus:ring-blue-500/20 dark:border-slate-700 dark:bg-slate-800/40 dark:text-slate-100 dark:focus:border-blue-500 dark:focus:bg-slate-800">
+                            <SelectValue placeholder="เลือกจังหวัด" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="rounded-xl border border-slate-100 shadow-md dark:border-slate-800 dark:bg-[#1e293b]">
+                          {REGIONAL_PROVINCES.map((province) => (
+                            <SelectItem key={province} value={province} className="rounded-lg cursor-pointer">
+                              {province}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage className="text-xs text-red-500 mt-0.5" />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               {/* 2. ข้อมูลวิชาการ */}
               <div className="grid gap-6 grid-cols-1">

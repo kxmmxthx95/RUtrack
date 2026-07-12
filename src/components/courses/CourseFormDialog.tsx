@@ -102,10 +102,10 @@ export function CourseFormDialog({
     }
     try {
       if (isEdit && course?.id) {
-        await updateCourse(course.id, data)
+        await updateCourse(user.uid, course.id, data)
         toast.success("อัปเดตรายวิชาแล้ว")
       } else {
-        await addCourse({ ...data, userId: user.uid })
+        await addCourse(user.uid, data)
         toast.success("เพิ่มรายวิชาแล้ว")
       }
       onOpenChange(false)

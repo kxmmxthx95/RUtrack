@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Timestamp } from "firebase/firestore"
 import { toast } from "sonner"
+import { useAuth } from "@/contexts/AuthContext"
 import { addMilestone, updateMilestone } from "@/lib/courses"
 import type { Milestone } from "@/types"
 import { Button } from "@/components/ui/button"
@@ -66,6 +67,7 @@ export function MilestoneFormDialog({
   onOpenChange,
   milestone,
 }: MilestoneFormDialogProps) {
+  const { user } = useAuth()
   const isEdit = Boolean(milestone?.id)
 
   const form = useForm<MilestoneFormValues>({
@@ -86,6 +88,7 @@ export function MilestoneFormDialog({
   }, [open, milestone, form])
 
   async function onSubmit(values: MilestoneFormValues) {
+    if (!user) return
     const data = {
       title: values.title,
       milestone_type: values.milestone_type,
@@ -93,10 +96,10 @@ export function MilestoneFormDialog({
     }
     try {
       if (isEdit && milestone?.id) {
-        await updateMilestone(courseId, milestone.id, data)
+        await updateMilestone(user.uid, courseId, milestone.id, data)
         toast.success("อัปเดตเป้าหมายแล้ว")
       } else {
-        await addMilestone(courseId, { ...data, is_completed: false })
+        await addMilestone(user.uid, courseId, { ...data, is_completed: false })
         toast.success("เพิ่มเป้าหมายแล้ว")
       }
       onOpenChange(false)

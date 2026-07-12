@@ -30,6 +30,7 @@ export interface UserProfile {
   last_name?: string
   phone_number?: string
   additional_info: {
+    province?: string
     commute_distance_km?: number
     commute_minutes_per_day?: number
     work_hours_per_week?: number
@@ -38,10 +39,9 @@ export interface UserProfile {
   is_admin?: boolean
 }
 
-/** courses/{courseId} */
+/** users/{uid}/courses/{courseId} */
 export interface Course {
   id?: string
-  userId: string
   course_code: string
   name: string
   credits: number
@@ -49,7 +49,7 @@ export interface Course {
   grade?: Grade
 }
 
-/** courses/{courseId}/milestones/{milestoneId} */
+/** users/{uid}/courses/{courseId}/milestones/{milestoneId} */
 export interface Milestone {
   id?: string
   title: string
@@ -58,10 +58,9 @@ export interface Milestone {
   is_completed: boolean
 }
 
-/** study_events/{eventId} */
+/** users/{uid}/study_events/{eventId} */
 export interface StudyEvent {
   id?: string
-  userId: string
   title: string
   start_time: Timestamp
   end_time: Timestamp
@@ -75,4 +74,30 @@ export interface MasterCourse {
   name: string
   credits: number
   category: string
+}
+
+/**
+ * curricula/{campus}/years/{academicYear}/faculties/{faculty}/majors/{major}/courses/{courseId}
+ * — courses attached to a specific campus > academic_year > faculty > major
+ * node in the curriculum tree.
+ */
+export type CourseCategoryType =
+  | "general"
+  | "specialized_required"
+  | "specialized_core"
+  | "specialized_major"
+  | "specialized_minor"
+  | "specialized_elective_major"
+  | "specialized_elective_minor"
+  | "specialized_elective"
+  | "specialized_faculty_elective"
+  | "free_elective"
+
+export interface CurriculumCourse {
+  id?: string
+  course_code: string
+  name: string
+  name_en?: string
+  credits: number
+  course_category: CourseCategoryType
 }

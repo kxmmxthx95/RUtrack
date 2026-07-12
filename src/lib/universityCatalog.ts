@@ -309,3 +309,23 @@ export function getMajors(
   const faculty = UNIVERSITY_CATALOG[campus].find((f) => f.name === facultyName)
   return faculty?.programs.find((p) => p.name === programName)?.majors ?? []
 }
+
+/** All majors under a faculty, flattened across its programs and de-duplicated by name. */
+export function getMajorsByFaculty(
+  campus: CampusCatalogKey,
+  facultyName: string,
+): MajorOption[] {
+  const faculty = UNIVERSITY_CATALOG[campus].find((f) => f.name === facultyName)
+  if (!faculty) return []
+  const seen = new Set<string>()
+  const majors: MajorOption[] = []
+  for (const program of faculty.programs) {
+    for (const major of program.majors) {
+      if (!seen.has(major.name)) {
+        seen.add(major.name)
+        majors.push(major)
+      }
+    }
+  }
+  return majors
+}

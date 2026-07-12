@@ -26,35 +26,34 @@ service cloud.firestore {
       allow update: if isOwner(userId)
         && request.resource.data.get('is_admin', false) == resource.data.get('is_admin', false);
       allow delete: if false;
-    }
 
-    // courses/{courseId} — each document belongs to one user via userId.
-    match /courses/{courseId} {
-      allow read, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isSignedIn()
-        && resource.data.userId == request.auth.uid
-        && request.resource.data.userId == request.auth.uid;
+      // courses/{courseId} — owned by the parent user via path, not a field.
+      match /courses/{courseId} {
+        allow read, write: if isOwner(userId);
 
-      // milestones subcollection — ownership follows the parent course.
-      match /milestones/{milestoneId} {
-        allow read, write: if isSignedIn()
-          && get(/databases/$(database)/documents/courses/$(courseId)).data.userId == request.auth.uid;
+        // milestones subcollection — ownership follows the parent course.
+        match /milestones/{milestoneId} {
+          allow read, write: if isOwner(userId);
+        }
       }
-    }
 
-    // study_events/{eventId} — time-blocking entries per user.
-    match /study_events/{eventId} {
-      allow read, delete: if isSignedIn() && resource.data.userId == request.auth.uid;
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isSignedIn()
-        && resource.data.userId == request.auth.uid
-        && request.resource.data.userId == request.auth.uid;
+      // study_events/{eventId} — time-blocking entries, owned via path.
+      match /study_events/{eventId} {
+        allow read, write: if isOwner(userId);
+      }
     }
 
     // master_courses — global catalog: readable by any signed-in user,
     // writable only by admins.
     match /master_courses/{courseId} {
+      allow read: if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    // curricula/{campus}/years/{year}/faculties/{faculty}/majors/{major}/courses/{courseId}
+    // — courses attached to a campus/academic_year/faculty/major node in the
+    // curriculum tree: readable by any signed-in user, writable only by admins.
+    match /curricula/{campus}/years/{year}/faculties/{faculty}/majors/{major}/courses/{courseId} {
       allow read: if isSignedIn();
       allow write: if isAdmin();
     }

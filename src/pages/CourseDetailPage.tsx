@@ -13,6 +13,7 @@ import {
   IoTrashOutline as Trash2,
 } from "react-icons/io5"
 import { toast } from "sonner"
+import { useAuth } from "@/contexts/AuthContext"
 import { db } from "@/lib/firebase"
 import { deleteMilestone, updateMilestone } from "@/lib/courses"
 import { useMilestones } from "@/hooks/useCourses"
@@ -47,6 +48,7 @@ const TYPE_LABELS: Record<Milestone["milestone_type"], string> =
   >
 
 export default function CourseDetailPage() {
+  const { user } = useAuth()
   const { courseId } = useParams<{ courseId: string }>()
   const navigate = useNavigate()
   const [course, setCourse] = useState<Course | null>(null)
@@ -56,9 +58,9 @@ export default function CourseDetailPage() {
   const [editing, setEditing] = useState<Milestone | null>(null)
 
   useEffect(() => {
-    if (!courseId) return
+    if (!courseId || !user) return
     const unsubscribe = onSnapshot(
-      doc(db, "courses", courseId),
+      doc(db, "users", user.uid, "courses", courseId),
       (snap) => {
         if (snap.exists()) {
           setCourse({ id: snap.id, ...snap.data() } as Course)
@@ -74,25 +76,27 @@ export default function CourseDetailPage() {
       },
     )
     return unsubscribe
-  }, [courseId, navigate])
+  }, [courseId, navigate, user])
 
   const done = milestones.filter((m) => m.is_completed).length
   const progress =
     milestones.length > 0 ? Math.round((done / milestones.length) * 100) : 0
 
   async function toggleComplete(m: Milestone) {
-    if (!courseId || !m.id) return
+    if (!courseId || !m.id || !user) return
     try {
-      await updateMilestone(courseId, m.id, { is_completed: !m.is_completed })
+      await updateMilestone(user.uid, courseId, m.id, {
+        is_completed: !m.is_completed,
+      })
     } catch {
       toast.error("อัปเดตเป้าหมายไม่สำเร็จ")
     }
   }
 
   async function handleDelete(m: Milestone) {
-    if (!courseId || !m.id) return
+    if (!courseId || !m.id || !user) return
     try {
-      await deleteMilestone(courseId, m.id)
+      await deleteMilestone(user.uid, courseId, m.id)
       toast.success("ลบเป้าหมายแล้ว")
     } catch {
       toast.error("ลบเป้าหมายไม่สำเร็จ")

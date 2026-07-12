@@ -5,7 +5,6 @@ import {
   RedirectIfAuthed,
   RequireAdmin,
   RequireAuth,
-  RequireNoProfile,
   RequireProfile,
   RequireStudent,
 } from "@/components/ProtectedRoute"
@@ -13,11 +12,13 @@ import AppLayout from "@/layouts/AppLayout"
 import AdminLayout from "@/layouts/AdminLayout"
 import AdminDashboardPage from "@/pages/admin/AdminDashboardPage"
 import MasterCoursesPage from "@/pages/admin/MasterCoursesPage"
+import CurriculumPage from "@/pages/admin/CurriculumPage"
 import AdminUsersPage from "@/pages/admin/AdminUsersPage"
 import AdminSettingsPage from "@/pages/admin/AdminSettingsPage"
 import LoginPage from "@/pages/auth/LoginPage"
 import RegisterPage from "@/pages/auth/RegisterPage"
 import ProfileSetupPage from "@/pages/ProfileSetupPage"
+import ProfilePage from "@/pages/ProfilePage"
 import DashboardPage from "@/pages/DashboardPage"
 import CoursesPage from "@/pages/CoursesPage"
 import CourseDetailPage from "@/pages/CourseDetailPage"
@@ -36,13 +37,12 @@ function App() {
           </Route>
 
           <Route element={<RequireAuth />}>
-            <Route element={<RequireNoProfile />}>
-              <Route path="/setup" element={<ProfileSetupPage />} />
-            </Route>
+            <Route path="/setup" element={<ProfileSetupPage />} />
             <Route element={<RequireProfile />}>
               <Route element={<RequireStudent />}>
                 <Route element={<AppLayout />}>
                   <Route index element={<DashboardPage />} />
+                  <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/courses" element={<CoursesPage />} />
                   <Route
                     path="/courses/:courseId"
@@ -59,6 +59,7 @@ function App() {
                     path="master-courses"
                     element={<MasterCoursesPage />}
                   />
+                  <Route path="curriculum" element={<CurriculumPage />} />
                   <Route path="users" element={<AdminUsersPage />} />
                   <Route path="settings" element={<AdminSettingsPage />} />
                 </Route>

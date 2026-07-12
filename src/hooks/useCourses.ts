@@ -21,17 +21,18 @@ export function useCourses() {
 }
 
 export function useMilestones(courseId: string | undefined) {
+  const { user } = useAuth()
   const [milestones, setMilestones] = useState<Milestone[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!courseId) return
-    const unsubscribe = listenToMilestones(courseId, (data) => {
+    if (!courseId || !user) return
+    const unsubscribe = listenToMilestones(user.uid, courseId, (data) => {
       setMilestones(data)
       setLoading(false)
     })
     return unsubscribe
-  }, [courseId])
+  }, [courseId, user])
 
   return { milestones, loading }
 }

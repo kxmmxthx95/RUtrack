@@ -33,15 +33,6 @@ export function RequireProfile() {
   return <Outlet />
 }
 
-/** For /setup: redirects users who already have a profile back to /. */
-export function RequireNoProfile() {
-  const { profile, loading } = useAuth()
-
-  if (loading) return <FullPageLoader />
-  if (profile) return <Navigate to="/" replace />
-  return <Outlet />
-}
-
 /** Restricts the admin area to users whose profile has is_admin: true. */
 export function RequireAdmin() {
   const { profile, loading } = useAuth()

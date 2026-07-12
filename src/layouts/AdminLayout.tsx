@@ -1,6 +1,7 @@
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom"
 import {
   IoArrowBackOutline as ArrowLeft,
+  IoGitBranchOutline as GitBranch,
   IoGridOutline as LayoutDashboard,
   IoLibraryOutline as Library,
   IoLogOutOutline as LogOut,
@@ -16,6 +17,7 @@ import { cn } from "@/lib/utils"
 const ADMIN_NAV = [
   { to: "/admin", label: "แดชบอร์ด", icon: LayoutDashboard, end: true },
   { to: "/admin/master-courses", label: "คลังรายวิชา", icon: Library },
+  { to: "/admin/curriculum", label: "จัดการหลักสูตร", icon: GitBranch },
   { to: "/admin/users", label: "ผู้ใช้งาน", icon: Users },
   { to: "/admin/settings", label: "ตั้งค่า", icon: Settings },
 ]

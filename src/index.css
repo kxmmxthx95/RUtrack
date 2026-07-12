@@ -3,8 +3,51 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: "Sukhumvit Set";
+  src: url("/fonts/sukhumvit-set/SukhumvitSet-Thin.ttf") format("truetype");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Sukhumvit Set";
+  src: url("/fonts/sukhumvit-set/SukhumvitSet-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Sukhumvit Set";
+  src: url("/fonts/sukhumvit-set/SukhumvitSet-Text.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Sukhumvit Set";
+  src: url("/fonts/sukhumvit-set/SukhumvitSet-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Sukhumvit Set";
+  src: url("/fonts/sukhumvit-set/SukhumvitSet-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Sukhumvit Set";
+  src: url("/fonts/sukhumvit-set/SukhumvitSet-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme inline {
-  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Sukhumvit Set", "Inter Variable", "Inter", ui-sans-serif, system-ui, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -126,5 +169,20 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
     letter-spacing: 0em;
+  }
+}
+
+@utility animate-page-in {
+  animation: pageFadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pageFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

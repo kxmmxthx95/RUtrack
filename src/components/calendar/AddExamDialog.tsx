@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Timestamp } from "firebase/firestore"
 import { toast } from "sonner"
+import { useAuth } from "@/contexts/AuthContext"
 import { addMilestone } from "@/lib/courses"
 import type { Course } from "@/types"
 import { Button } from "@/components/ui/button"
@@ -54,6 +55,7 @@ export function AddExamDialog({
   courses,
   defaultDate,
 }: AddExamDialogProps) {
+  const { user } = useAuth()
   const form = useForm<ExamFormValues>({
     resolver: zodResolver(examSchema),
     defaultValues: { courseId: "", title: "สอบปลายภาค", target_date: "" },
@@ -70,8 +72,9 @@ export function AddExamDialog({
   }, [open, defaultDate, courses, form])
 
   async function onSubmit(values: ExamFormValues) {
+    if (!user) return
     try {
-      await addMilestone(values.courseId, {
+      await addMilestone(user.uid, values.courseId, {
         title: values.title,
         milestone_type: "exam",
         target_date: Timestamp.fromDate(

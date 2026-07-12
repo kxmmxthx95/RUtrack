@@ -152,7 +152,10 @@ export default function MasterCoursesPage() {
         await updateMasterCourse(editing.id, values)
         toast.success("อัปเดตรายวิชาแล้ว")
       } else {
-        await addMasterCourse(values)
+        await addMasterCourse({
+          ...values,
+          course_code: values.course_code!,
+        })
         toast.success("เพิ่มรายวิชาแล้ว")
       }
       setFormOpen(false)

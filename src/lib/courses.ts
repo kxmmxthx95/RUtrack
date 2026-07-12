@@ -8,7 +8,6 @@ import {
   orderBy,
   query,
   updateDoc,
-  where,
   writeBatch,
 } from "firebase/firestore"
 import { db } from "@/lib/firebase"
@@ -17,14 +16,15 @@ import type { Course, Milestone } from "@/types"
 /** Total credits required to graduate (RU bachelor's degree). */
 export const DEGREE_TOTAL_CREDITS = 139
 
-const coursesCol = collection(db, "courses")
+function coursesCol(userId: string) {
+  return collection(db, "users", userId, "courses")
+}
 
 export function listenToCourses(
   userId: string,
   onChange: (courses: Course[]) => void,
 ): () => void {
-  const q = query(coursesCol, where("userId", "==", userId))
-  return onSnapshot(q, (snap) => {
+  return onSnapshot(coursesCol(userId), (snap) => {
     const courses = snap.docs.map(
       (d) => ({ id: d.id, ...d.data() }) as Course,
     )
@@ -33,63 +33,74 @@ export function listenToCourses(
   })
 }
 
-export async function addCourse(course: Omit<Course, "id">): Promise<string> {
-  const ref = await addDoc(coursesCol, course)
+export async function addCourse(
+  userId: string,
+  course: Omit<Course, "id">,
+): Promise<string> {
+  const ref = await addDoc(coursesCol(userId), course)
   return ref.id
 }
 
 export async function updateCourse(
+  userId: string,
   courseId: string,
-  data: Partial<Omit<Course, "id" | "userId">>,
+  data: Partial<Omit<Course, "id">>,
 ): Promise<void> {
-  await updateDoc(doc(db, "courses", courseId), data)
+  await updateDoc(doc(coursesCol(userId), courseId), data)
 }
 
-export async function deleteCourse(courseId: string): Promise<void> {
+export async function deleteCourse(
+  userId: string,
+  courseId: string,
+): Promise<void> {
   // Firestore doesn't cascade-delete subcollections, so clear milestones
   // first (while the parent still exists and rules can verify ownership).
-  const milestones = await getDocs(collection(db, "courses", courseId, "milestones"))
+  const milestones = await getDocs(milestonesCol(userId, courseId))
   const batch = writeBatch(db)
   milestones.docs.forEach((d) => batch.delete(d.ref))
-  batch.delete(doc(db, "courses", courseId))
+  batch.delete(doc(coursesCol(userId), courseId))
   await batch.commit()
 }
 
-// --- Milestones (subcollection of courses/{courseId}) ---
+// --- Milestones (subcollection of users/{userId}/courses/{courseId}) ---
 
-function milestonesCol(courseId: string) {
-  return collection(db, "courses", courseId, "milestones")
+function milestonesCol(userId: string, courseId: string) {
+  return collection(db, "users", userId, "courses", courseId, "milestones")
 }
 
 export function listenToMilestones(
+  userId: string,
   courseId: string,
   onChange: (milestones: Milestone[]) => void,
 ): () => void {
-  const q = query(milestonesCol(courseId), orderBy("target_date", "asc"))
+  const q = query(milestonesCol(userId, courseId), orderBy("target_date", "asc"))
   return onSnapshot(q, (snap) => {
     onChange(snap.docs.map((d) => ({ id: d.id, ...d.data() }) as Milestone))
   })
 }
 
 export async function addMilestone(
+  userId: string,
   courseId: string,
   milestone: Omit<Milestone, "id">,
 ): Promise<string> {
-  const ref = await addDoc(milestonesCol(courseId), milestone)
+  const ref = await addDoc(milestonesCol(userId, courseId), milestone)
   return ref.id
 }
 
 export async function updateMilestone(
+  userId: string,
   courseId: string,
   milestoneId: string,
   data: Partial<Omit<Milestone, "id">>,
 ): Promise<void> {
-  await updateDoc(doc(db, "courses", courseId, "milestones", milestoneId), data)
+  await updateDoc(doc(milestonesCol(userId, courseId), milestoneId), data)
 }
 
 export async function deleteMilestone(
+  userId: string,
   courseId: string,
   milestoneId: string,
 ): Promise<void> {
-  await deleteDoc(doc(db, "courses", courseId, "milestones", milestoneId))
+  await deleteDoc(doc(milestonesCol(userId, courseId), milestoneId))
 }
